@@ -1,1 +1,1 @@
-# Easygym
+# Easygym - RS1
