@@ -14,18 +14,11 @@ namespace Easygym.Api.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(int id)
         {
-            var users = await _userRepository.GetAllAsync();
-            return Ok(users);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
-        {
-            await _userRepository.AddAsync(user);
-            return Created();
+            var user = await _userRepository.GetByIdAsync(id);
+            return Ok(user);
         }
 
     }

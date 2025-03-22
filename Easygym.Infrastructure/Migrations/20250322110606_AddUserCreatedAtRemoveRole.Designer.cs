@@ -3,6 +3,7 @@ using System;
 using Easygym.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Easygym.Infrastructure.Migrations
 {
     [DbContext(typeof(EasygymDbContext))]
-    partial class EasygymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250322110606_AddUserCreatedAtRemoveRole")]
+    partial class AddUserCreatedAtRemoveRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
