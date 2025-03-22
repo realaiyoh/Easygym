@@ -1,27 +1,12 @@
-import '@/App.css';
-import { ThemeProvider } from '@/components/ThemeProvider';
-import { ModeToggle } from '@/components/ModeToggle';
-import { User } from '@/types/User';
-import agent from '@/api/agent';
-import { useState } from 'react';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { Outlet } from 'react-router';
 
-function App() {
-  const [user, setUser] = useState<User | null>(null);
-
-  const fetchUser = async () => {
-    const user = await agent.users.single('1');
-    setUser(user.data);
-  };
-
+const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-      <div className="bg-background">
-        <ModeToggle />
-        <p onClick={fetchUser}>FETCH SINGLE USER</p>
-        <p>{user?.name}</p>
-      </div>
+      <Outlet />
     </ThemeProvider>
   );
-}
+};
 
 export default App;
