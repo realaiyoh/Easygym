@@ -44,12 +44,6 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -129,4 +123,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.wrapper {
+  @apply m-4 relative;
 }
