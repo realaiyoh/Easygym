@@ -32,16 +32,14 @@ namespace Easygym.Application.Services
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             var user = new User
             {
-                Id = Guid.NewGuid().ToString(),
                 Email = email,
                 Password = passwordHash,
                 Role = role,
-                CreatedAt = DateTime.UtcNow
             };
 
             await _userRepository.AddUserAsync(user);
 
-            return _jwtService.GenerateToken(user.Id, role);
+            return _jwtService.GenerateToken(user.Id.ToString(), role);
         }
 
         public async Task<string> LoginAsync(string email, string password)
@@ -52,7 +50,7 @@ namespace Easygym.Application.Services
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
 
-            return _jwtService.GenerateToken(user.Id, user.Role);
+            return _jwtService.GenerateToken(user.Id.ToString(), user.Role);
         }
 
         private bool VerifyPassword(string password, string passwordHash)
