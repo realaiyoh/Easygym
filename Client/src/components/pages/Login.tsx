@@ -38,7 +38,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen-content">
       <Form {...form}>
         <FormWrapper className="w-1/3" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
