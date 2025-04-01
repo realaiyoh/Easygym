@@ -1,3 +1,4 @@
+using Easygym.Domain.Exceptions;
 using Easygym.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +32,12 @@ namespace Easygym.Infrastructure.Repositories
 
         public async Task<T?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync(id) ?? throw new UserNotFoundException();
         }
 
         public async Task<T?> GetByIdAsync(string id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync(id) ?? throw new UserNotFoundException();
         }
 
         public async Task AddAsync(T entity)

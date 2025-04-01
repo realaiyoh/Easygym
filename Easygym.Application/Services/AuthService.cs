@@ -1,5 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
+using Easygym.Domain.Exceptions;
 using Easygym.Domain.Interfaces;
 
 namespace Easygym.Application.Services
@@ -19,14 +21,13 @@ namespace Easygym.Application.Services
             role = role.ToLower();
             if (!new[] { Role.Admin, Role.Trainer, Role.Client }.Contains(role, StringComparer.Ordinal))
             {
-                throw new Exception("Invalid role");
+                throw new InvalidRoleException();
             }
-
 
             var userExists = await _userRepository.GetUserByEmailAsync(email);
             if (userExists != null)
             {
-                throw new Exception("User already exists");
+                throw new UserAlreadyExistsException();
             }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
@@ -45,12 +46,35 @@ namespace Easygym.Application.Services
         public async Task<string> LoginAsync(string email, string password)
         {
             var user = await _userRepository.GetUserByEmailAsync(email);
-            if (user == null || !VerifyPassword(password, user.Password))
+            if (user == null)
             {
-                throw new UnauthorizedAccessException("Invalid email or password");
+                throw new UserNotFoundException();
+            }
+
+            if (!VerifyPassword(password, user.Password))
+            {
+                throw new InvalidCredentialsException();
             }
 
             return _jwtService.GenerateToken(user.Id.ToString(), user.Role);
+        }
+
+        public int GetUserIdByTokenAsync(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new MissingTokenException();
+            }
+
+            var decodedToken = _jwtService.DecodeToken(token);
+            var userId = decodedToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value!;
+
+            if (userId == null)
+            {
+                throw new InvalidTokenException("Can't get user id from token");
+            }
+
+            return int.Parse(userId);
         }
 
         private bool VerifyPassword(string password, string passwordHash)

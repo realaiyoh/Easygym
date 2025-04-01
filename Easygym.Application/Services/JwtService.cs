@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Easygym.Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -41,6 +42,18 @@ namespace Easygym.Application.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public JwtSecurityToken DecodeToken(string token)
+        {
+            var decodedToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+            if (decodedToken == null)
+            {
+                throw new InvalidTokenException();
+            }
+
+            return decodedToken;
         }
     }
 }
