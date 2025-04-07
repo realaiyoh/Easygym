@@ -1,4 +1,4 @@
-import { User, UserRole } from '@/types/User';
+import { UserRegisterRequest, User } from '@/types/User';
 import { requests } from '@/api/api';
 
 const authService = {
@@ -14,11 +14,7 @@ const authService = {
       console.error('error: ', error);
     }
   },
-  register: async (body: {
-    email: string;
-    password: string;
-    role: UserRole;
-  }) => {
+  register: async (body: UserRegisterRequest) => {
     try {
       const token = await requests.post<string>('/auth/register', body);
       return token;

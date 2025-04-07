@@ -20,7 +20,7 @@ namespace Easygym.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var token = await _authService.RegisterAsync(request.Email, request.Password, request.Role);
+            var token = await _authService.RegisterAsync(request.Name, request.Email, request.Password, request.Role);
             return Ok(token);
         }
 
@@ -51,6 +51,7 @@ namespace Easygym.Api.Controllers
 
     public class RegisterRequest
     {
+        public required string Name { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string Role { get; set; }

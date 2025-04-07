@@ -30,6 +30,7 @@ const Register = observer(() => {
   const { auth } = useStore();
 
   const FormSchema = z.object({
+    name: z.string(),
     email: z.string().email({
       message: 'Invalid email address.',
     }),
@@ -42,6 +43,7 @@ const Register = observer(() => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
       role: UserRole.Client,
@@ -62,6 +64,19 @@ const Register = observer(() => {
     <div className="flex flex-col items-center justify-center h-screen-content">
       <Form {...form}>
         <FormWrapper className="w-1/3" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem fullWidth>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Name..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"

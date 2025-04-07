@@ -5,11 +5,14 @@ import ModeToggle from '@/components/theme/ModeToggle';
 import Navbar from '@/components/layout/Navbar';
 import { useEffect } from 'react';
 import { useStore } from '@/store/store';
+import { authTokenKey } from '@/lib/constants';
 
 const App = () => {
   const { auth } = useStore();
   useEffect(() => {
-    auth.setMeUser();
+    if (localStorage.getItem(authTokenKey)) {
+      auth.setMeUser();
+    }
   }, []);
 
   return (

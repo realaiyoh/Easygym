@@ -1,6 +1,6 @@
 import api from '@/api/api';
 import { authTokenKey } from '@/lib/constants';
-import { UserRole } from '@/types/User';
+import { UserRegisterRequest } from '@/types/User';
 import { User } from '@/types/User';
 import { makeAutoObservable, runInAction } from 'mobx';
 
@@ -44,22 +44,14 @@ export default class AuthStore {
     this.isLoading = false;
   };
 
-  register = async ({
-    email,
-    password,
-    role,
-  }: {
-    email: string;
-    password: string;
-    role: UserRole;
-  }) => {
+  register = async (user: UserRegisterRequest) => {
     runInAction(() => {
       this.isLoading = true;
       this.error = null;
     });
 
     try {
-      const token = await api.auth.register({ email, password, role });
+      const token = await api.auth.register(user);
       if (token) {
         localStorage.setItem(authTokenKey, token);
         return this.setMeUser();
