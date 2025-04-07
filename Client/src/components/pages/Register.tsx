@@ -13,8 +13,22 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
+import { UserRole } from '@/types/User';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { titleize } from '@/lib/utils';
+import { useStore } from '@/store/store';
+import { observer } from 'mobx-react-lite';
 
-const Login = () => {
+const Register = observer(() => {
+  const { auth } = useStore();
+
   const FormSchema = z.object({
     email: z.string().email({
       message: 'Invalid email address.',
@@ -22,6 +36,7 @@ const Login = () => {
     password: z.string().min(8, {
       message: 'Password must be at least 8 characters.',
     }),
+    role: z.enum(Object.values(UserRole) as [UserRole, ...UserRole[]]),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -29,12 +44,18 @@ const Login = () => {
     defaultValues: {
       email: '',
       password: '',
+      role: UserRole.Client,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log('data: ', data);
-    toast.success('Submitted');
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const user = await auth.register(data);
+
+    if (user) {
+      toast.success('Registered successfully');
+    } else {
+      toast.error('Failed to register');
+    }
   };
 
   return (
@@ -67,11 +88,40 @@ const Login = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem fullWidth>
+                <FormLabel>Role</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  {...field}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {Object.values(UserRole).map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {titleize(role)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+
           <Button type="submit">Submit</Button>
         </FormWrapper>
       </Form>
     </div>
   );
-};
+});
 
-export default Login;
+export default Register;

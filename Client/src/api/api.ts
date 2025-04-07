@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { authTokenKey } from '@/lib/constants';
-import { ApiService } from '@/types/ApiService';
-import services from '@/api/services/services';
+import authService from '@/api/services/authService';
+import userService from '@/api/services/userService';
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -24,19 +24,20 @@ instance.interceptors.request.use(
   },
 );
 
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
 export const requests = {
-  get: async <T>(url: string) => await instance.get<T>(url),
-  post: async <T>(url: string, body: {}) => await instance.post<T>(url, body),
-  put: async <T>(url: string, body: {}) => await instance.put<T>(url, body),
-  delete: async <T>(url: string) => await instance.delete<T>(url),
+  get: <T>(url: string) => instance.get<T>(url).then(responseBody),
+  post: <T>(url: string, body: {}) =>
+    instance.post<T>(url, body).then(responseBody),
+  put: <T>(url: string, body: {}) =>
+    instance.put<T>(url, body).then(responseBody),
+  delete: <T>(url: string) => instance.delete<T>(url).then(responseBody),
 };
 
-const api = services.reduce(
-  (acc: Record<string, ApiService['service']>, service: ApiService) => {
-    acc[service.name] = service.service;
-    return acc;
-  },
-  {} as Record<string, ApiService['service']>,
-);
+const api = {
+  users: userService,
+  auth: authService,
+};
 
 export default api;
