@@ -12,7 +12,6 @@ const Navbar = observer(() => {
       <h1 className="text-2xl uppercase">EasyGym</h1>
       <div className="flex items-center w-fit ml-auto mr-16">
         <div className="flex items-center gap-4">
-          <NavLink to={routes.Home}>Home</NavLink>
           {auth.user ? (
             <>
               <NavLink to={routes.Profile}>Profile</NavLink>
@@ -20,6 +19,7 @@ const Navbar = observer(() => {
             </>
           ) : (
             <>
+              <NavLink to={routes.Home}>Home</NavLink>
               <NavLink to={routes.Login}>Login</NavLink>
               <NavLink to={routes.Register}>Register</NavLink>
             </>
