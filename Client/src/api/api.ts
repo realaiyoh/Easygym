@@ -28,9 +28,9 @@ const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 export const requests = {
   get: <T>(url: string) => instance.get<T>(url).then(responseBody),
-  post: <T>(url: string, body: {}) =>
+  post: <T>(url: string, body: object) =>
     instance.post<T>(url, body).then(responseBody),
-  put: <T>(url: string, body: {}) =>
+  put: <T>(url: string, body: object) =>
     instance.put<T>(url, body).then(responseBody),
   delete: <T>(url: string) => instance.delete<T>(url).then(responseBody),
 };

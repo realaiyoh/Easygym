@@ -7,20 +7,12 @@ const authService = {
     return user;
   },
   login: async (body: { email: string; password: string }) => {
-    try {
-      const token = await requests.post<string>('/auth/login', body);
-      return token;
-    } catch (error) {
-      console.error('error: ', error);
-    }
+    const token = await requests.post<string>('/auth/login', body);
+    return token;
   },
   register: async (body: UserRegisterRequest) => {
-    try {
-      const token = await requests.post<string>('/auth/register', body);
-      return token;
-    } catch (error) {
-      console.error('error: ', error);
-    }
+    const token = await requests.post<string>('/auth/register', body);
+    return token;
   },
 };
 

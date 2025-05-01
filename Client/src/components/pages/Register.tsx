@@ -37,7 +37,13 @@ const Register = observer(() => {
     password: z.string().min(8, {
       message: 'Password must be at least 8 characters.',
     }),
+    confirmPassword: z.string().min(8, {
+      message: 'Password must be at least 8 characters.',
+    }),
     role: z.enum(Object.values(UserRole) as [UserRole, ...UserRole[]]),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -46,6 +52,7 @@ const Register = observer(() => {
       name: '',
       email: '',
       password: '',
+      confirmPassword: '',
       role: UserRole.Client,
     },
   });
@@ -56,7 +63,7 @@ const Register = observer(() => {
     if (user) {
       toast.success('Registered successfully');
     } else {
-      toast.error('Failed to register');
+      toast.error(`Failed to register: ${auth.error}`);
     }
   };
 
@@ -98,6 +105,23 @@ const Register = observer(() => {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="Password..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem fullWidth>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Confirm Password..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -2,6 +2,7 @@ import api from '@/api/api';
 import { authTokenKey } from '@/lib/constants';
 import { UserRegisterRequest } from '@/types/User';
 import { User } from '@/types/User';
+import { getErrorMessage } from '@/lib/utils';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class AuthStore {
@@ -58,12 +59,19 @@ export default class AuthStore {
       }
     } catch (error) {
       runInAction(() => {
-        this.error = error as string;
+        this.error = getErrorMessage(error);
       });
     }
 
     runInAction(() => {
       this.isLoading = false;
+    });
+  };
+
+  logout = () => {
+    localStorage.removeItem(authTokenKey);
+    runInAction(() => {
+      this.user = null;
     });
   };
 }

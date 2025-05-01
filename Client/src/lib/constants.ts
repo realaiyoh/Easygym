@@ -5,4 +5,5 @@ export const routes = {
   Login: '/login',
   Register: '/register',
   Profile: '/profile',
+  Logout: '/logout',
 };
