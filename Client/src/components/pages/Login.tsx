@@ -32,10 +32,10 @@ const Login = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
     console.log('data: ', data);
     toast.success('Submitted');
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen-content">

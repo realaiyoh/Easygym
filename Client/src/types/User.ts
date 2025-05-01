@@ -12,3 +12,10 @@ export interface User {
   role: UserRole;
   createdAt: Date;
 }
+
+export interface UserRegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}

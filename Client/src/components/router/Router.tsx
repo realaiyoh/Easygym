@@ -2,7 +2,11 @@ import App from '@/App';
 import { Route, BrowserRouter, Routes } from 'react-router';
 import Home from '@/components/pages/Home';
 import Login from '@/components/pages/Login';
+import Register from '@/components/pages/Register';
 import { routes } from '@/lib/constants';
+import ProtectedRoute from '@/components/router/ProtectedRoute';
+import Profile from '@/components/pages/user/Profile';
+import AuthRoute from '@/components/router/AuthRoute';
 
 const Router = () => {
   return (
@@ -10,7 +14,17 @@ const Router = () => {
       <Routes>
         <Route path={routes.Home} element={<App />}>
           <Route index element={<Home />} />
-          <Route path={routes.Login} element={<Login />} />
+
+          {/* Auth routes for login and register */}
+          <Route element={<AuthRoute />}>
+            <Route path={routes.Login} element={<Login />} />
+            <Route path={routes.Register} element={<Register />} />
+          </Route>
+
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path={routes.Profile} element={<Profile />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
