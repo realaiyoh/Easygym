@@ -38,7 +38,7 @@ export default class AuthStore {
       }
     } catch (error) {
       runInAction(() => {
-        this.error = error as string;
+        this.error = getErrorMessage(error);
       });
     }
 

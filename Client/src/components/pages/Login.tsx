@@ -13,8 +13,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
+import { useStore } from '@/store/store';
 
 const Login = () => {
+  const { auth } = useStore();
+
   const FormSchema = z.object({
     email: z.string().email({
       message: 'Invalid email address.',
@@ -32,9 +35,13 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log('data: ', data);
-    toast.success('Submitted');
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const user = await auth.login(data);
+    if (user) {
+      toast.success('Logged in successfully');
+    } else {
+      toast.error(`Failed to login: ${auth.error}`);
+    }
   };
 
   return (
