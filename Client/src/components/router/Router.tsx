@@ -7,6 +7,7 @@ import { routes } from '@/lib/constants';
 import ProtectedRoute from '@/components/router/ProtectedRoute';
 import Profile from '@/components/pages/user/Profile';
 import AuthRoute from '@/components/router/AuthRoute';
+import Workouts from '@/components/pages/workouts/Workouts';
 
 const Router = () => {
   return (
@@ -24,6 +25,7 @@ const Router = () => {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path={routes.Profile} element={<Profile />} />
+            <Route path={routes.Workouts} element={<Workouts />} />
           </Route>
         </Route>
       </Routes>

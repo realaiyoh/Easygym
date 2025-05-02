@@ -10,11 +10,14 @@ namespace Easygym.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
-        private readonly IGenericRepository<User> _userRepository;
-        public AuthController(AuthService authService, IGenericRepository<User> userRepository)
+        private readonly CurrentUserService _currentUserService;
+        
+        public AuthController(
+            AuthService authService, 
+            CurrentUserService currentUserService)
         {
             _authService = authService;
-            _userRepository = userRepository;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost("register")]
@@ -34,11 +37,7 @@ namespace Easygym.Api.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> Me()
         {
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "") ?? "";
-
-            var userId = _authService.GetUserIdByTokenAsync(authHeader);
-            var user = await _userRepository.GetByIdAsync(userId);
-
+            var user = await _currentUserService.GetCurrentUserAsync();
             return Ok(user);
         }
     }
@@ -51,7 +50,7 @@ namespace Easygym.Api.Controllers
 
     public class RegisterRequest
     {
-        public required string Name { get; set; }
+        public string? Name { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string Role { get; set; }
