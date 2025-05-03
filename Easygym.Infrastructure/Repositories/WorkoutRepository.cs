@@ -17,7 +17,7 @@ namespace Easygym.Infrastructure.Repositories
 
         public async Task<List<Workout>> GetWorkoutsForTraineeAsync(int traineeId)
         {
-           return await _context.Workouts.Where(w => w.TraineeId == traineeId).ToListAsync();
+            return await _context.Workouts.Where(w => w.TraineeId == traineeId).ToListAsync();
         }
 
         public async Task<Workout> GetWorkoutForTraineeAsync(int workoutId, int traineeId)
@@ -30,7 +30,7 @@ namespace Easygym.Infrastructure.Repositories
             await _context.Workouts.AddAsync(workout);
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task UpdateWorkoutAsync(Workout workout)
         {
             _context.Workouts.Update(workout);
@@ -42,6 +42,6 @@ namespace Easygym.Infrastructure.Repositories
             _context.Workouts.Remove(workout);
             await _context.SaveChangesAsync();
         }
-        
+
     }
 }

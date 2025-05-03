@@ -11,7 +11,6 @@ namespace Easygym.Api.Controllers
     public class WorkoutController : Controller
     {
         private readonly IWorkoutRepository _workoutRepository;
-        private readonly CurrentUserService _currentUserService;
         private readonly WorkoutService _workoutService;
 
         public WorkoutController(
@@ -20,12 +19,11 @@ namespace Easygym.Api.Controllers
             WorkoutService workoutService)
         {
             _workoutRepository = workoutRepository;
-            _currentUserService = currentUserService;
             _workoutService = workoutService;
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{Role.Admin}, {Role.Client}, {Role.Trainer}")]
+        [Authorize(Roles = Role.All)]
         public async Task<IActionResult> GetWorkoutsForTrainee([FromBody] GetWorkoutsForTraineeRequest request)
         {
             var workouts = await _workoutService.GetWorkoutsForTraineeAsync(request.TraineeId);
@@ -33,15 +31,16 @@ namespace Easygym.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = $"{Role.Admin}, {Role.Trainer}")]
-        public async Task<IActionResult> GetWorkoutForTrainee([FromBody] GetWorkoutForTraineeRequest request)
+        [Authorize(Roles = Role.All)]
+        public async Task<IActionResult> GetWorkoutForTrainee(int workoutId, [FromBody] GetWorkoutsForTraineeRequest request)
         {
-            var workout = await _workoutService.GetWorkoutForTraineeAsync(request.WorkoutId, request.TraineeId);
+            var workout = await _workoutService.GetWorkoutForTraineeAsync(workoutId, request.TraineeId);
             return Ok(workout);
         }
 
+
         [HttpPost]
-        [Authorize(Roles = $"{Role.Admin}, {Role.Trainer}")]
+        [Authorize(Roles = Role.All)]
         public async Task<IActionResult> CreateWorkout(Workout workout)
         {
             await _workoutRepository.AddWorkoutAsync(workout);
