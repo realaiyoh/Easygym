@@ -22,6 +22,7 @@ builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<CurrentUserService>();
+builder.Services.AddScoped<WorkoutService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>

@@ -19,3 +19,7 @@ export interface UserRegisterRequest {
   password: string;
   role: UserRole;
 }
+
+export interface AuthTokenResponse {
+  token: string;
+}

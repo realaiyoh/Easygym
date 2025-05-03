@@ -52,6 +52,11 @@ namespace Easygym.Domain.Exceptions
         public WorkoutNotFoundException() : base("Workout not found") { }
     }
 
+    public class ForbiddenAccessException : AppException
+    {
+        public ForbiddenAccessException() : base("Forbidden access") { }
+    }
+
     // For general validation errors
     public class ValidationException : AppException
     {
