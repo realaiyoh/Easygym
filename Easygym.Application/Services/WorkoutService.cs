@@ -30,6 +30,14 @@ namespace Easygym.Application.Services
             return workout;
         }
 
+        public async Task<Workout> CreateWorkoutAsync(Workout workout)
+        {
+            await CanAccessWorkout(workout.TraineeId);
+
+            await _workoutRepository.AddWorkoutAsync(workout);
+            return workout;
+        }
+
         private async Task<bool> CanAccessWorkout(int traineeId)
         {
             var currentUser = await _currentUserService.GetCurrentUserAsync();

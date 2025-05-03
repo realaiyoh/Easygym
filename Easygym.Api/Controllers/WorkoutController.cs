@@ -1,8 +1,6 @@
-using Easygym.Api.Models.Requests;
 using Easygym.Application.Services;
 using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
-using Easygym.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,41 +8,35 @@ namespace Easygym.Api.Controllers
 {
     public class WorkoutController : Controller
     {
-        private readonly IWorkoutRepository _workoutRepository;
         private readonly WorkoutService _workoutService;
 
-        public WorkoutController(
-            IWorkoutRepository workoutRepository,
-            CurrentUserService currentUserService,
-            WorkoutService workoutService)
+        public WorkoutController(WorkoutService workoutService)
         {
-            _workoutRepository = workoutRepository;
             _workoutService = workoutService;
         }
 
-        [HttpGet]
+        [HttpGet("trainee/{traineeId}")]
         [Authorize(Roles = Role.All)]
-        public async Task<IActionResult> GetWorkoutsForTrainee([FromBody] GetWorkoutsForTraineeRequest request)
+        public async Task<IActionResult> GetWorkoutsForTrainee(int traineeId)
         {
-            var workouts = await _workoutService.GetWorkoutsForTraineeAsync(request.TraineeId);
+            var workouts = await _workoutService.GetWorkoutsForTraineeAsync(traineeId);
             return Ok(workouts);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("trainee/{traineeId}/{workoutId}")]
         [Authorize(Roles = Role.All)]
-        public async Task<IActionResult> GetWorkoutForTrainee(int workoutId, [FromBody] GetWorkoutsForTraineeRequest request)
+        public async Task<IActionResult> GetWorkoutForTrainee(int traineeId, int workoutId)
         {
-            var workout = await _workoutService.GetWorkoutForTraineeAsync(workoutId, request.TraineeId);
+            var workout = await _workoutService.GetWorkoutForTraineeAsync(workoutId, traineeId);
             return Ok(workout);
         }
-
 
         [HttpPost]
         [Authorize(Roles = Role.All)]
         public async Task<IActionResult> CreateWorkout(Workout workout)
         {
-            await _workoutRepository.AddWorkoutAsync(workout);
-            return Ok(workout);
+            var newWorkout = await _workoutService.CreateWorkoutAsync(workout);
+            return Ok(newWorkout);
         }
 
         // [HttpDelete("{id}")]
