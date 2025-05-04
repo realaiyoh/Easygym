@@ -16,7 +16,9 @@ const Navbar = observer(() => {
             <>
               <NavLink to={routes.Workouts}>Workouts</NavLink>
               <NavLink to={routes.Profile}>Profile</NavLink>
-              <Button variant="outline" onClick={auth.logout}>Logout</Button>
+              <Button variant="outline" onClick={auth.logout}>
+                Logout
+              </Button>
             </>
           ) : (
             <>

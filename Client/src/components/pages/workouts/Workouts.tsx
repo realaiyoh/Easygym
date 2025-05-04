@@ -1,19 +1,27 @@
-import { Button } from "@/components/ui/button";
+import { useStore } from '@/store/store';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import WorkoutCard from '@/components/pages/workouts/WorkoutCard';
 
-const Workouts = () => {
-    const workouts = []; // Temporary empty array, replace with actual workout data source
+const Workouts = observer(() => {
+  const { workout, auth } = useStore();
+  const { workouts, fetchWorkouts } = workout;
 
-    if (workouts.length === 0) {
-        return (
-            <div className="flex flex-col gap-2 items-center justify-center h-screen">
-                <h1 className="text-2xl">No Workouts Found</h1>
-                <p>You don't have any workouts yet. Create your first workout to get started.</p>
-                <Button>Create Workout</Button>
-            </div>
-        );
+  useEffect(() => {
+    if (auth.user) {
+      fetchWorkouts(auth.user.id);
     }
+  }, [fetchWorkouts, auth.user]);
 
-    return <div>Workouts</div>;
-};
+  return (
+    <div className="mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {workouts.map((workout) => (
+          <WorkoutCard key={workout.id} workout={workout} />
+        ))}
+      </div>
+    </div>
+  );
+});
 
 export default Workouts;

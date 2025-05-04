@@ -8,17 +8,22 @@ import { makeAutoObservable, runInAction } from 'mobx';
 export default class AuthStore {
   user: User | null = null;
   error: string | null = null;
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
   }
 
   setMeUser = async (): Promise<User | null> => {
+    runInAction(() => {
+      this.isLoading = true;
+    });
+
     const user = await api.auth.me();
 
     runInAction(() => {
       this.user = user;
+      this.isLoading = false;
     });
 
     return user;
@@ -42,7 +47,9 @@ export default class AuthStore {
       });
     }
 
-    this.isLoading = false;
+    runInAction(() => {
+      this.isLoading = false;
+    });
   };
 
   register = async (user: UserRegisterRequest) => {
