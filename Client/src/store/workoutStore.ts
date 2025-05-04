@@ -88,4 +88,17 @@ export default class WorkoutStore {
       });
     }
   };
+
+  deleteWorkout = async (traineeId: number, workoutId: number) => {
+    try {
+      await workoutService.deleteWorkout(traineeId, workoutId);
+      runInAction(() => {
+        this.workouts = this.workouts.filter((w) => w.id !== workoutId);
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error = getErrorMessage(error);
+      });
+    }
+  };
 }

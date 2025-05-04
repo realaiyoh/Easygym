@@ -14,20 +14,43 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Set, Workout } from '@/types/Workout';
 import { Plus, Trash } from 'lucide-react';
 import { useStore } from '@/store/store';
 import { routes } from '@/lib/constants';
 import { useNavigate, useParams } from 'react-router';
 import { observer } from 'mobx-react-lite';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const WorkoutForm = observer(() => {
   const params = useParams();
   const navigate = useNavigate();
   const { workout, auth } = useStore();
 
-  const { createWorkout, fetchWorkout, error: workoutError } = workout;
+  const workoutId = useMemo(() => parseInt(params.id as string), [params.id]);
+  const formNameText = useMemo(
+    () => (workoutId ? 'Update workout' : 'Create workout'),
+    [workoutId],
+  );
+
+  const {
+    createWorkout,
+    deleteWorkout,
+    fetchWorkout,
+    error: workoutError,
+  } = workout;
   const [sets, setSets] = useState<Omit<Set, 'id'>[]>([]);
 
   const setFormSchema = z.object({
@@ -84,16 +107,14 @@ const WorkoutForm = observer(() => {
   );
 
   useEffect(() => {
-    if (!params.id) return;
+    if (!workoutId) return;
 
     const fetchWorkoutAndPopulateForm = async () => {
       // On reload, workouts are cleared, so we need to fetch this workout again,
       // nothing will happen if the workout is already in the store
-      await fetchWorkout(auth.user!.id, parseInt(params.id as string));
+      await fetchWorkout(auth.user!.id, workoutId);
 
-      const existingWorkout = workout.workouts.find(
-        (w) => w.id === parseInt(params.id as string),
-      );
+      const existingWorkout = workout.workouts.find((w) => w.id === workoutId);
 
       populateFormCached(existingWorkout);
     };
@@ -101,7 +122,7 @@ const WorkoutForm = observer(() => {
     fetchWorkoutAndPopulateForm();
   }, [
     auth.user,
-    params.id,
+    workoutId,
     workout.workouts,
     fetchWorkout,
     populateFormCached,
@@ -147,10 +168,19 @@ const WorkoutForm = observer(() => {
     setForm.handleSubmit(addSet)();
   };
 
+  const handleDeleteWorkout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    deleteWorkout(auth.user!.id, workoutId);
+    toast.success('Workout deleted successfully');
+
+    navigate(routes.Workouts);
+  };
+
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Create Workout</h2>
+        <h2 className="text-2xl font-bold mb-4">{formNameText}</h2>
         <Form {...workoutForm}>
           <FormWrapper
             className="w-full"
@@ -203,13 +233,13 @@ const WorkoutForm = observer(() => {
               <h3 className="text-xl font-bold">Sets</h3>
 
               {sets.length > 0 && (
-                <div className="space-y-4 mb-6">
+                <div className="flex gap-2 mb-6">
                   {sets.map((set, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-4 p-4 border rounded-md"
+                      className="flex gap-4 justify-between p-4 border rounded-md"
                     >
-                      <div className="flex-1">
+                      <div>
                         <p>
                           <strong>{set.name || `Set ${index + 1}`}</strong>
                         </p>
@@ -219,7 +249,9 @@ const WorkoutForm = observer(() => {
                           </p>
                         )}
                         <p>Reps: {set.repetitions}</p>
-                        {set.weight && <p>Weight: {set.weight}kg</p>}
+                        {!!set.weight && set.weight > 0 && (
+                          <p>Weight: {set.weight}kg</p>
+                        )}
                       </div>
                       <Button
                         variant="ghost"
@@ -300,9 +332,39 @@ const WorkoutForm = observer(() => {
               <Plus className="h-4 w-4 mr-2" /> Add Set
             </Button>
 
-            <Button type="submit" className="mt-6">
-              Create Workout
-            </Button>
+            <div className="flex gap-2">
+              <Button type="submit" className="mt-6">
+                {formNameText}
+              </Button>
+              {!!workoutId && (
+                <Dialog>
+                  <Button variant="destructive" className="mt-6" asChild>
+                    <DialogTrigger>Delete Workout</DialogTrigger>
+                  </Button>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you absolutely sure?</DialogTitle>
+                      <DialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your workout program and its related data from
+                        our servers.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteWorkout}
+                      >
+                        Delete Workout
+                      </Button>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </FormWrapper>
         </Form>
       </div>

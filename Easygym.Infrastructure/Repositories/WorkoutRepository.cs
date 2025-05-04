@@ -33,6 +33,7 @@ namespace Easygym.Infrastructure.Repositories
         public async Task<Workout> GetWorkoutAsync(int workoutId)
         {
             return await _context.Workouts
+            .Include(w => w.Sets)
             .FirstOrDefaultAsync(w => w.Id == workoutId) ?? throw new WorkoutNotFoundException();
         }
 
@@ -51,6 +52,12 @@ namespace Easygym.Infrastructure.Repositories
         public async Task DeleteWorkoutAsync(int workoutId)
         {
             var workout = await GetWorkoutAsync(workoutId);
+
+            // Remove all sets associated with the workout
+            if (workout.Sets.Count != 0)
+            {
+                _context.Sets.RemoveRange(workout.Sets);
+            }
 
             _context.Workouts.Remove(workout);
             await _context.SaveChangesAsync();

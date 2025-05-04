@@ -18,6 +18,9 @@ const workoutService = {
     const newWorkout = await requests.post<Workout>(`/workout`, workout);
     return newWorkout;
   },
+  deleteWorkout: async (traineeId: number, workoutId: number) => {
+    await requests.delete(`/workout/trainee/${traineeId}/${workoutId}`);
+  },
 };
 
 export default workoutService;
