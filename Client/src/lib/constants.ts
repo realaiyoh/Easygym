@@ -7,5 +7,7 @@ export const routes = {
   Profile: '/profile',
   Logout: '/logout',
   Workouts: '/workouts',
-  CreateWorkout: '/workouts/create',
+  Workout: '/workout',
+  CreateWorkout: '/workout/create',
+  EditWorkout: (id: number) => `/workout/${id}/edit`,
 };

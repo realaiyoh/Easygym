@@ -14,18 +14,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
-import { useState } from 'react';
-import { Set } from '@/types/Workout';
+import { useCallback, useEffect, useState } from 'react';
+import { Set, Workout } from '@/types/Workout';
 import { Plus, Trash } from 'lucide-react';
 import { useStore } from '@/store/store';
 import { routes } from '@/lib/constants';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { observer } from 'mobx-react-lite';
 
-const WorkoutForm = () => {
+const WorkoutForm = observer(() => {
+  const params = useParams();
   const navigate = useNavigate();
   const { workout, auth } = useStore();
 
-  const { createWorkout, error: workoutError } = workout;
+  const { createWorkout, fetchWorkout, error: workoutError } = workout;
   const [sets, setSets] = useState<Omit<Set, 'id'>[]>([]);
 
   const setFormSchema = z.object({
@@ -63,6 +65,47 @@ const WorkoutForm = () => {
       weight: 0,
     },
   });
+
+  // Helper function to populate the form with workout data
+  const populateFormCached = useCallback(
+    (workoutData: Workout | undefined) => {
+      workoutForm.setValue('name', workoutData?.name || '');
+      workoutForm.setValue('description', workoutData?.description || '');
+      workoutForm.setValue(
+        'restTimeSeconds',
+        workoutData?.restTimeSeconds || 60,
+      );
+
+      if (workoutData?.sets?.length) {
+        setSets(workoutData.sets);
+      }
+    },
+    [workoutForm, setSets],
+  );
+
+  useEffect(() => {
+    if (!params.id) return;
+
+    const fetchWorkoutAndPopulateForm = async () => {
+      // On reload, workouts are cleared, so we need to fetch this workout again,
+      // nothing will happen if the workout is already in the store
+      await fetchWorkout(auth.user!.id, parseInt(params.id as string));
+
+      const existingWorkout = workout.workouts.find(
+        (w) => w.id === parseInt(params.id as string),
+      );
+
+      populateFormCached(existingWorkout);
+    };
+
+    fetchWorkoutAndPopulateForm();
+  }, [
+    auth.user,
+    params.id,
+    workout.workouts,
+    fetchWorkout,
+    populateFormCached,
+  ]);
 
   const addSet = (data: z.infer<typeof setFormSchema>) => {
     setSets([...sets, data]);
@@ -265,6 +308,6 @@ const WorkoutForm = () => {
       </div>
     </div>
   );
-};
+});
 
 export default WorkoutForm;

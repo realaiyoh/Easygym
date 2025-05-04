@@ -2,12 +2,15 @@ import { Workout } from '@/types/Workout';
 import { formatDistance } from 'date-fns';
 import { Dumbbell, Calendar, Info, ChevronRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import { routes } from '@/lib/constants';
+import { useNavigate } from 'react-router';
 interface WorkoutCardProps {
   workout: Workout;
 }
 
 const WorkoutCard = ({ workout }: WorkoutCardProps) => {
+  const navigate = useNavigate();
+
   const formattedDate = workout.createdAt
     ? formatDistance(new Date(workout.createdAt), new Date(), {
         addSuffix: true,
@@ -17,6 +20,10 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
   const restTimeInMinutes = workout.restTimeSeconds
     ? Math.round((workout.restTimeSeconds / 60) * 10) / 10
     : null;
+
+  const handleEditWorkout = () => {
+    navigate(routes.EditWorkout(workout.id));
+  };
 
   return (
     <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-4 hover:shadow-md transition-all">
@@ -30,7 +37,12 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
             <span>{formattedDate}</span>
           </div>
         </div>
-        <Button variant="ghost" size="icon" aria-label="More details">
+        <Button
+          onClick={handleEditWorkout}
+          variant="ghost"
+          size="icon"
+          aria-label="More details"
+        >
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>

@@ -7,6 +7,7 @@ export default class WorkoutStore {
   workouts: Workout[] = [];
   isLoading: boolean = false;
   error: string | null = null;
+  workoutFetchPromise: Promise<Workout> | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -31,6 +32,47 @@ export default class WorkoutStore {
 
     runInAction(() => {
       this.isLoading = false;
+    });
+  };
+
+  fetchWorkout = async (traineeId: number, workoutId: number) => {
+    runInAction(() => {
+      this.isLoading = true;
+      this.error = null;
+    });
+
+    // If the workout is already in the store, don't add it again
+    if (this.workouts.find((w) => w.id === workoutId)) return;
+
+    try {
+      // If the workout is already being fetched, return the existing promise
+      if (this.workoutFetchPromise) {
+        return await this.workoutFetchPromise;
+      }
+
+      const fetchPromise = workoutService.getWorkoutForTrainee(
+        traineeId,
+        workoutId,
+      );
+
+      runInAction(() => {
+        this.workoutFetchPromise = fetchPromise;
+      });
+
+      const workout = await fetchPromise;
+
+      runInAction(() => {
+        this.workouts.push(workout);
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error = getErrorMessage(error);
+      });
+    }
+
+    runInAction(() => {
+      this.isLoading = false;
+      this.workoutFetchPromise = null;
     });
   };
 

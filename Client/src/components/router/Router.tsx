@@ -27,7 +27,10 @@ const Router = () => {
           <Route element={<ProtectedRoute />}>
             <Route path={routes.Profile} element={<Profile />} />
             <Route path={routes.Workouts} element={<Workouts />} />
-            <Route path={routes.CreateWorkout} element={<WorkoutForm />} />
+            <Route path={routes.Workout}>
+              <Route path="create" element={<WorkoutForm />} />
+              <Route path=":id/edit" element={<WorkoutForm />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
