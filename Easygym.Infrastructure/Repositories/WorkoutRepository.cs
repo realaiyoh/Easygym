@@ -17,12 +17,17 @@ namespace Easygym.Infrastructure.Repositories
 
         public async Task<List<Workout>> GetWorkoutsForTraineeAsync(int traineeId)
         {
-            return await _context.Workouts.Where(w => w.TraineeId == traineeId).ToListAsync();
+            return await _context.Workouts
+            .Include(w => w.Sets)
+            .Where(w => w.TraineeId == traineeId)
+            .ToListAsync();
         }
 
         public async Task<Workout> GetWorkoutForTraineeAsync(int workoutId, int traineeId)
         {
-            return await _context.Workouts.FirstOrDefaultAsync(w => w.Id == workoutId && w.TraineeId == traineeId) ?? throw new WorkoutNotFoundException();
+            return await _context.Workouts
+            .Include(w => w.Sets)
+            .FirstOrDefaultAsync(w => w.Id == workoutId && w.TraineeId == traineeId) ?? throw new WorkoutNotFoundException();
         }
 
         public async Task AddWorkoutAsync(Workout workout)
