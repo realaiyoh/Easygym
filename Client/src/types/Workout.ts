@@ -18,3 +18,11 @@ export interface Workout {
   restTimeSeconds?: number;
   createdAt: string;
 }
+
+export interface CreateWorkoutRequest {
+  name?: string;
+  description?: string;
+  traineeId: number;
+  sets: Omit<Set, 'id'>[];
+  restTimeSeconds?: number;
+}

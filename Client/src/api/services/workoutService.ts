@@ -1,5 +1,5 @@
 import { requests } from '@/api/api';
-import { Workout } from '@/types/Workout';
+import { CreateWorkoutRequest, Workout } from '@/types/Workout';
 
 const workoutService = {
   getWorkoutsForTrainee: async (traineeId: number) => {
@@ -14,7 +14,7 @@ const workoutService = {
     );
     return workout;
   },
-  createWorkout: async (workout: Workout) => {
+  createWorkout: async (workout: CreateWorkoutRequest) => {
     const newWorkout = await requests.post<Workout>(`/workout`, workout);
     return newWorkout;
   },

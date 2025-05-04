@@ -17,8 +17,15 @@ import FormWrapper from '@/components/ui/widgets/FormWrapper';
 import { useState } from 'react';
 import { Set } from '@/types/Workout';
 import { Plus, Trash } from 'lucide-react';
+import { useStore } from '@/store/store';
+import { routes } from '@/lib/constants';
+import { useNavigate } from 'react-router';
 
 const WorkoutForm = () => {
+  const navigate = useNavigate();
+  const { workout, auth } = useStore();
+
+  const { createWorkout, error: workoutError } = workout;
   const [sets, setSets] = useState<Omit<Set, 'id'>[]>([]);
 
   const setFormSchema = z.object({
@@ -69,19 +76,27 @@ const WorkoutForm = () => {
     setSets(newSets);
   };
 
-  const onSubmit = (data: z.infer<typeof workoutFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof workoutFormSchema>) => {
     if (sets.length === 0) {
       toast.error('You must add at least one set');
       return;
     }
 
-    const workout = {
+    const workoutData = {
       ...data,
       sets,
+      traineeId: auth.user!.id,
     };
 
-    console.log('Submitting workout:', workout);
+    await createWorkout(workoutData);
+
+    if (workoutError) {
+      toast.error(workoutError);
+      return;
+    }
+
     toast.success('Workout created successfully');
+    navigate(routes.Workouts);
   };
 
   const handleAddSet = (e: React.MouseEvent<HTMLButtonElement>) => {
