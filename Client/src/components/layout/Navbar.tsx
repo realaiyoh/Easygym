@@ -8,7 +8,7 @@ const Navbar = observer(() => {
   const { auth } = useStore();
 
   return (
-    <div className="flex items-center h-9 font-bold">
+    <div className="flex items-center h-9 font-bold mb-4">
       <h1 className="text-2xl uppercase">EasyGym</h1>
       <div className="flex items-center w-fit ml-auto mr-16">
         <div className="flex items-center gap-4">

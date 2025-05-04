@@ -14,6 +14,12 @@ export default class AuthStore {
     makeAutoObservable(this);
   }
 
+  setLoading = (isLoading: boolean) => {
+    runInAction(() => {
+      this.isLoading = isLoading;
+    });
+  };
+
   setMeUser = async (): Promise<User | null> => {
     runInAction(() => {
       this.isLoading = true;

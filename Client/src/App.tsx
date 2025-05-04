@@ -15,6 +15,8 @@ const App = observer(() => {
   useEffect(() => {
     if (localStorage.getItem(authTokenKey)) {
       auth.setMeUser();
+    } else {
+      auth.setLoading(false);
     }
   }, [auth]);
 

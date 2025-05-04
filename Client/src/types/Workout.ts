@@ -2,7 +2,7 @@ import { User } from '@/types/User';
 
 export interface Set {
   id: number;
-  name?: string;
+  name: string;
   description?: string;
   repetitions: number;
   weight?: number;
@@ -15,5 +15,6 @@ export interface Workout {
   traineeId: number;
   trainee?: User;
   sets?: Set[];
+  restTimeSeconds?: number;
   createdAt: string;
 }

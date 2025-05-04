@@ -1,6 +1,6 @@
 import { Workout } from '@/types/Workout';
 import { formatDistance } from 'date-fns';
-import { Dumbbell, Calendar, Info, ChevronRight } from 'lucide-react';
+import { Dumbbell, Calendar, Info, ChevronRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WorkoutCardProps {
@@ -13,6 +13,10 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
         addSuffix: true,
       })
     : 'Unknown date';
+
+  const restTimeInMinutes = workout.restTimeSeconds
+    ? Math.round((workout.restTimeSeconds / 60) * 10) / 10
+    : null;
 
   return (
     <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-4 hover:shadow-md transition-all">
@@ -62,6 +66,13 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
                 +{workout.sets.length - 2} more sets
               </div>
             )}
+          </div>
+        )}
+
+        {restTimeInMinutes && (
+          <div className="flex items-center text-sm mt-2">
+            <Clock className="h-4 w-4 mr-2 text-primary" />
+            <span>Rest time: {restTimeInMinutes} min</span>
           </div>
         )}
       </div>

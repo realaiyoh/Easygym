@@ -39,13 +39,13 @@ namespace Easygym.Api.Controllers
             return Ok(newWorkout);
         }
 
-        // [HttpDelete("{id}")]
-        // [Authorize(Roles = $"{Role.Admin}, {Role.Trainer}")]
-        // public async Task<IActionResult> DeleteWorkout(int id)
-        // {
-        //     await _workoutRepository.DeleteWorkoutAsync(id);
-        //     return Ok();
-        // }
+        [HttpDelete("trainee/{traineeId}/{workoutId}")]
+        [Authorize(Roles = Role.All)]
+        public async Task<IActionResult> DeleteWorkout(int traineeId, int workoutId)
+        {
+            await _workoutService.DeleteWorkoutAsync(traineeId, workoutId);
+            return Ok();
+        }
 
         // [HttpPut("{id}")]
         // public async Task<IActionResult> UpdateWorkout(int id, Workout workout)

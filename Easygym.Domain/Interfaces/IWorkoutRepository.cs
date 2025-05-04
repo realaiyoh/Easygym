@@ -8,6 +8,7 @@ namespace Easygym.Domain.Interfaces
         Task<Workout> GetWorkoutForTraineeAsync(int workoutId, int traineeId);
         Task AddWorkoutAsync(Workout workout);
         Task UpdateWorkoutAsync(Workout workout);
-        Task DeleteWorkoutAsync(Workout workout);
+        Task DeleteWorkoutAsync(int workoutId);
+        Task<Workout> GetWorkoutAsync(int workoutId);
     }
 }

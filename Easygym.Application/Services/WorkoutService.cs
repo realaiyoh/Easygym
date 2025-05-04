@@ -34,11 +34,22 @@ namespace Easygym.Application.Services
         {
             await CanAccessWorkout(workout.TraineeId);
 
+            if (workout.Sets.Count == 0)
+            {
+                throw new ValidationException("Workout must have at least one set");
+            }
+
             await _workoutRepository.AddWorkoutAsync(workout);
             return workout;
         }
 
-        private async Task<bool> CanAccessWorkout(int traineeId)
+        public async Task DeleteWorkoutAsync(int traineeId, int workoutId)
+        {
+            await CanAccessWorkout(traineeId);
+            await _workoutRepository.DeleteWorkoutAsync(workoutId);
+        }
+
+        private async Task CanAccessWorkout(int traineeId)
         {
             var currentUser = await _currentUserService.GetCurrentUserAsync();
 
@@ -48,8 +59,6 @@ namespace Easygym.Application.Services
             {
                 throw new ForbiddenAccessException();
             }
-
-            return true;
         }
     }
 }

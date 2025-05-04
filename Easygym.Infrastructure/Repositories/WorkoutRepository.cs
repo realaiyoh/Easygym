@@ -30,6 +30,12 @@ namespace Easygym.Infrastructure.Repositories
             .FirstOrDefaultAsync(w => w.Id == workoutId && w.TraineeId == traineeId) ?? throw new WorkoutNotFoundException();
         }
 
+        public async Task<Workout> GetWorkoutAsync(int workoutId)
+        {
+            return await _context.Workouts
+            .FirstOrDefaultAsync(w => w.Id == workoutId) ?? throw new WorkoutNotFoundException();
+        }
+
         public async Task AddWorkoutAsync(Workout workout)
         {
             await _context.Workouts.AddAsync(workout);
@@ -42,8 +48,10 @@ namespace Easygym.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteWorkoutAsync(Workout workout)
+        public async Task DeleteWorkoutAsync(int workoutId)
         {
+            var workout = await GetWorkoutAsync(workoutId);
+
             _context.Workouts.Remove(workout);
             await _context.SaveChangesAsync();
         }
