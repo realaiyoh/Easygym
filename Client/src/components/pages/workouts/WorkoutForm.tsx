@@ -14,9 +14,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Set, Workout } from '@/types/Workout';
-import { Plus, Trash } from 'lucide-react';
+import { Dumbbell, Plus, XCircleIcon } from 'lucide-react';
 import { useStore } from '@/store/store';
 import { routes } from '@/lib/constants';
 import { useNavigate, useParams } from 'react-router';
@@ -39,6 +39,8 @@ const WorkoutForm = observer(() => {
   const navigate = useNavigate();
   const { workout, auth } = useStore();
 
+  const setDisplayDetailsRef = useRef<HTMLButtonElement>(null);
+
   const workoutId = useMemo(() => parseInt(params.id as string), [params.id]);
   const formNameText = useMemo(
     () => (workoutId ? 'Update workout' : 'Create workout'),
@@ -52,6 +54,10 @@ const WorkoutForm = observer(() => {
     error: workoutError,
   } = workout;
   const [sets, setSets] = useState<Omit<Set, 'id'>[]>([]);
+  const [dialogSetDetails, setDialogSetDetails] = useState<Omit<
+    Set,
+    'id'
+  > | null>(null);
 
   const setFormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -134,7 +140,9 @@ const WorkoutForm = observer(() => {
     toast.success('Set added');
   };
 
-  const removeSet = (index: number) => {
+  const removeSet = (index: number, e: React.MouseEvent<SVGSVGElement>) => {
+    e.stopPropagation();
+
     const newSets = [...sets];
     newSets.splice(index, 1);
     setSets(newSets);
@@ -175,6 +183,11 @@ const WorkoutForm = observer(() => {
     toast.success('Workout deleted successfully');
 
     navigate(routes.Workouts);
+  };
+
+  const handleSetDisplaySetDetails = (set: Omit<Set, 'id'>) => {
+    setDialogSetDetails(set);
+    setDisplayDetailsRef.current?.click();
   };
 
   return (
@@ -228,45 +241,49 @@ const WorkoutForm = observer(() => {
                 </FormItem>
               )}
             />
-
             <div className="mt-8">
               <h3 className="text-xl font-bold">Sets</h3>
-
               {sets.length > 0 && (
-                <div className="flex gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-6 mt-4">
                   {sets.map((set, index) => (
                     <div
                       key={index}
-                      className="flex gap-4 justify-between p-4 border rounded-md"
+                      className="flex gap-4 justify-between p-4 border rounded-md w-[200px] hover:bg-card cursor-pointer"
+                      onClick={() => handleSetDisplaySetDetails(set)}
                     >
-                      <div>
-                        <p>
-                          <strong>{set.name || `Set ${index + 1}`}</strong>
-                        </p>
+                      <div className="flex flex-col gap-2 w-full">
+                        <div className="flex gap-4 w-full justify-between">
+                          <span className="font-bold">
+                            {set.name || `Set ${index + 1}`}
+                          </span>
+                          <XCircleIcon
+                            onClick={(e) => removeSet(index, e)}
+                            className="h-4 w-4 cursor-pointer mt-1 shrink-0"
+                          />
+                        </div>
+
                         {set.description && (
-                          <p className="text-sm text-gray-500">
-                            {set.description}
-                          </p>
+                          <div className="truncate">
+                            <span className="text-sm truncate text-gray-500">
+                              {set.description}
+                            </span>
+                          </div>
                         )}
-                        <p>Reps: {set.repetitions}</p>
-                        {!!set.weight && set.weight > 0 && (
-                          <p>Weight: {set.weight}kg</p>
-                        )}
+                        <div className="flex gap-2 justify-between">
+                          <p>{set.repetitions} Reps</p>
+                          {!!set.weight && set.weight > 0 && (
+                            <div className="flex gap-1 items-center">
+                              <Dumbbell className="h-4 w-4" />
+                              <span>{set.weight}kg</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeSet(index)}
-                        type="button"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={setForm.control}
@@ -327,11 +344,9 @@ const WorkoutForm = observer(() => {
                 )}
               />
             </div>
-
             <Button onClick={handleAddSet} variant="outline" className="mt-2">
               <Plus className="h-4 w-4 mr-2" /> Add Set
             </Button>
-
             <div className="flex gap-2">
               <Button type="submit" className="mt-6">
                 {formNameText}
@@ -365,6 +380,45 @@ const WorkoutForm = observer(() => {
                 </Dialog>
               )}
             </div>
+            <Dialog>
+              <Button variant="destructive" className="mt-6" asChild>
+                <DialogTrigger
+                  className="invisible"
+                  ref={setDisplayDetailsRef}
+                />
+              </Button>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Set Details - {dialogSetDetails?.name}
+                  </DialogTitle>
+                  <DialogDescription className="flex flex-col gap-2">
+                    {dialogSetDetails?.description && (
+                      <span>
+                        <span className="font-bold">Description:</span>{' '}
+                        {dialogSetDetails.description}
+                      </span>
+                    )}
+                    <span>
+                      <span className="font-bold">Repetitions:</span>{' '}
+                      {dialogSetDetails?.repetitions}
+                    </span>
+                    {!!dialogSetDetails?.weight &&
+                      dialogSetDetails.weight > 0 && (
+                        <span>
+                          <span className="font-bold">Weight:</span>{' '}
+                          {dialogSetDetails.weight} kg
+                        </span>
+                      )}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </FormWrapper>
         </Form>
       </div>
