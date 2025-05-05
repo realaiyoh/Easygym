@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
         policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(allowedOrigins.Split(','));
     });
 });
+builder.Services.Add();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var jwtKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? "");
