@@ -12,7 +12,7 @@
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
   --background: #ffffff;
-  --card: #ffffff;
+  --card: #f7f7f7;
   --card-foreground: #1a1a1a;
   --popover: #ffffff;
   --popover-foreground: #1a1a1a;
@@ -138,4 +138,26 @@
 
 .active {
   @apply underline underline-offset-4;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: inherit;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

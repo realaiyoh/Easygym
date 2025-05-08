@@ -16,7 +16,7 @@ namespace Easygym.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<string> RegisterAsync(string name, string email, string password, string role)
+        public async Task<string> RegisterAsync(string? name, string email, string password, string role)
         {
             role = role.ToLower();
             if (!new[] { Role.Admin, Role.Trainer, Role.Client }.Contains(role, StringComparer.Ordinal))

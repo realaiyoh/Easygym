@@ -1,19 +1,10 @@
 using Easygym.Domain.Exceptions;
+using Easygym.Domain.Interfaces;
 using Easygym.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Easygym.Infrastructure.Repositories
 {
-    public interface IGenericRepository<T> where T : class
-    {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
-        Task<T?> GetByIdAsync(string id);
-        Task AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
-    }
-
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly EasygymDbContext _context;

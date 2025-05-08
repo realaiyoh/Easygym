@@ -1,8 +1,8 @@
 using Easygym.Domain.Entities;
-using Easygym.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Easygym.Domain.Constants;
+using Easygym.Domain.Interfaces;
 
 namespace Easygym.Api.Controllers
 {

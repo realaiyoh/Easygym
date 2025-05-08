@@ -5,7 +5,7 @@ export enum UserRole {
 }
 
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   password: string;
@@ -18,4 +18,8 @@ export interface UserRegisterRequest {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export interface AuthTokenResponse {
+  token: string;
 }

@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { authTokenKey } from '@/lib/constants';
 import authService from '@/api/services/authService';
 import userService from '@/api/services/userService';
+import workoutService from './services/workoutService';
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -38,6 +39,7 @@ export const requests = {
 const api = {
   users: userService,
   auth: authService,
+  workouts: workoutService,
 };
 
 export default api;

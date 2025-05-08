@@ -42,6 +42,21 @@ namespace Easygym.Domain.Exceptions
         public MissingTokenException() : base("Authorization token is missing") { }
     }
 
+    public class WorkoutsNotFoundException : AppException
+    {
+        public WorkoutsNotFoundException() : base("Workouts not found") { }
+    }
+
+    public class WorkoutNotFoundException : AppException
+    {
+        public WorkoutNotFoundException() : base("Workout not found") { }
+    }
+
+    public class ForbiddenAccessException : AppException
+    {
+        public ForbiddenAccessException() : base("Forbidden access") { }
+    }
+
     // For general validation errors
     public class ValidationException : AppException
     {

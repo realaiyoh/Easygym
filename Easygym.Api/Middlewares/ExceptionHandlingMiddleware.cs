@@ -46,7 +46,12 @@ namespace Easygym.Api.Middlewares
                 // Validation exceptions
                 ValidationException => (HttpStatusCode.BadRequest, exception.Message),
 
+                // Workout exceptions
+                WorkoutsNotFoundException => (HttpStatusCode.NotFound, exception.Message),
+                WorkoutNotFoundException => (HttpStatusCode.NotFound, exception.Message),
+
                 // Other app exceptions
+                ForbiddenAccessException => (HttpStatusCode.Forbidden, exception.Message),
                 AppException => (HttpStatusCode.BadRequest, exception.Message),
 
                 // Fallback for unhandled exceptions
