@@ -1,6 +1,7 @@
 using Easygym.Application.Services;
 using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
+using Easygym.Domain.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +40,14 @@ namespace Easygym.Api.Controllers
             return Ok(newWorkout);
         }
 
+        [HttpPut("trainee/{traineeId}/{workoutId}")]
+        [Authorize(Roles = Role.All)]
+        public async Task<IActionResult> UpdateWorkout(int traineeId, int workoutId, [FromBody] UpdateWorkoutRequest workout)
+        {
+            var updatedWorkout = await _workoutService.UpdateWorkoutAsync(traineeId, workoutId, workout);
+            return Ok(updatedWorkout);
+        }
+
         [HttpDelete("trainee/{traineeId}/{workoutId}")]
         [Authorize(Roles = Role.All)]
         public async Task<IActionResult> DeleteWorkout(int traineeId, int workoutId)
@@ -46,13 +55,6 @@ namespace Easygym.Api.Controllers
             await _workoutService.DeleteWorkoutAsync(traineeId, workoutId);
             return Ok();
         }
-
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> UpdateWorkout(int id, Workout workout)
-        // {
-        //     await _workoutRepository.UpdateAsync(id, workout);
-        //     return Ok(workout);
-        // }
     }
 
 }

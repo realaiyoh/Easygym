@@ -1,6 +1,6 @@
 import workoutService from '@/api/services/workoutService';
 import { getErrorMessage } from '@/lib/utils';
-import { CreateWorkoutRequest, Workout } from '@/types/Workout';
+import { CreateWorkoutRequest, UpdateWorkoutRequest, Workout } from '@/types/Workout';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class WorkoutStore {
@@ -81,6 +81,19 @@ export default class WorkoutStore {
       const newWorkout = await workoutService.createWorkout(workout);
       runInAction(() => {
         this.workouts.push(newWorkout);
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error = getErrorMessage(error);
+      });
+    }
+  };
+
+  updateWorkout = async (traineeId: number, workoutId: number, workout: UpdateWorkoutRequest) => {
+    try {
+      const updatedWorkout = await workoutService.updateWorkout(traineeId, workoutId, workout);
+      runInAction(() => {
+        this.workouts = this.workouts.map((w) => w.id === workoutId ? updatedWorkout : w);
       });
     } catch (error) {
       runInAction(() => {

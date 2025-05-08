@@ -1,6 +1,7 @@
 using Easygym.Domain.Entities;
 using Easygym.Domain.Exceptions;
 using Easygym.Domain.Interfaces;
+using Easygym.Domain.Models.Requests;
 using Easygym.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,10 +44,42 @@ namespace Easygym.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateWorkoutAsync(Workout workout)
+        public async Task<Workout> UpdateWorkoutAsync(int workoutId, UpdateWorkoutRequest workout)
         {
-            _context.Workouts.Update(workout);
+            var existingWorkout = await GetWorkoutAsync(workoutId);
+
+            if (workout.Name != null)
+            {
+                existingWorkout.Name = workout.Name;
+            }
+
+            if (workout.Description != null)
+            {
+                existingWorkout.Description = workout.Description;
+            }
+
+            if (workout.Sets != null)
+            {
+                foreach (var set in existingWorkout.Sets)
+                {
+                    _context.Sets.Remove(set);
+                }
+
+                foreach (var newSet in workout.Sets)
+                {
+                    existingWorkout.Sets.Add(newSet);
+                }
+            }
+
+            if (workout.RestTimeSeconds != null)
+            {
+                existingWorkout.RestTimeSeconds = workout.RestTimeSeconds.Value;
+            }
+
+            _context.Workouts.Update(existingWorkout);
             await _context.SaveChangesAsync();
+
+            return existingWorkout;
         }
 
         public async Task DeleteWorkoutAsync(int workoutId)

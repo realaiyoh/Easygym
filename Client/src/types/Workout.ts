@@ -26,3 +26,10 @@ export interface CreateWorkoutRequest {
   sets: Omit<Set, 'id'>[];
   restTimeSeconds?: number;
 }
+
+export interface UpdateWorkoutRequest {
+  name?: string;
+  description?: string;
+  sets?: Set[] | Omit<Set, 'id'>[];
+  restTimeSeconds?: number;
+}

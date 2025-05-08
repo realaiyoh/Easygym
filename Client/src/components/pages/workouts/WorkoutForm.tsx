@@ -54,15 +54,12 @@ const WorkoutForm = observer(() => {
 
   const {
     createWorkout,
+    updateWorkout,
     deleteWorkout,
     fetchWorkout,
-    error: workoutError,
   } = workout;
-  const [sets, setSets] = useState<Omit<Set, 'id'>[]>([]);
-  const [dialogSetDetails, setDialogSetDetails] = useState<Omit<
-    Set,
-    'id'
-  > | null>(null);
+  const [sets, setSets] = useState<Omit<Set, 'id'>[] | Set[]>([]);
+  const [dialogSetDetails, setDialogSetDetails] = useState<Omit<Set, 'id'> | null>(null);
 
   const setFormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -125,7 +122,7 @@ const WorkoutForm = observer(() => {
     const fetchWorkoutAndPopulateForm = async () => {
       // On reload, workouts are cleared, so we need to fetch this workout again,
       // nothing will happen if the workout is already in the store
-      await fetchWorkout(auth.user!.id, workoutId);
+      await fetchWorkout(auth.userId, workoutId);
 
       const existingWorkout = workout.workouts.find((w) => w.id === workoutId);
 
@@ -134,7 +131,7 @@ const WorkoutForm = observer(() => {
 
     fetchWorkoutAndPopulateForm();
   }, [
-    auth.user,
+    auth.userId,
     workoutId,
     workout.workouts,
     fetchWorkout,
@@ -165,18 +162,22 @@ const WorkoutForm = observer(() => {
     const workoutData = {
       ...data,
       sets,
-      traineeId: auth.user!.id,
+      traineeId: auth.userId,
       restTimeSeconds: Math.round(data.restTimeMinutes * 100) / 100 * 60,
     };
 
-    await createWorkout(workoutData);
+    if (!workoutId) {
+      await createWorkout(workoutData);
+    } else {
+      await updateWorkout(auth.userId, workoutId, workoutData);
+    }
 
-    if (workoutError) {
-      toast.error(workoutError);
+    if (workout.error) {
+      toast.error(workout.error);
       return;
     }
 
-    toast.success('Workout created successfully');
+    toast.success(`Workout ${workoutId ? 'updated' : 'created'} successfully`);
     navigate(routes.Workouts);
   };
 
@@ -188,7 +189,7 @@ const WorkoutForm = observer(() => {
   const handleDeleteWorkout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    deleteWorkout(auth.user!.id, workoutId);
+    deleteWorkout(auth.userId, workoutId);
     toast.success('Workout deleted successfully');
 
     navigate(routes.Workouts);
@@ -200,43 +201,22 @@ const WorkoutForm = observer(() => {
   };
 
   const handleDuplicateSet = (
-    set: Omit<Set, 'id'>,
+    set: Omit<Set, 'id'> | Set,
     index: number,
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const newSets = [...sets];
-    newSets.splice(index + 1, 0, set);
-    setSets(newSets);
-  };
-
-  const handleMoveSet = (
-    index: number,
-    direction: 'left' | 'right',
-    e: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const newSets = [...sets];
-
-    const swap = (index1: number, index2: number) => {
-      if (index1 < 0 || index2 < 0) return;
-      if (index1 >= newSets.length || index2 >= newSets.length) return;
-
-      const temp = newSets[index1];
-      newSets[index1] = newSets[index2];
-      newSets[index2] = temp;
+    const newSet: Omit<Set, 'id'> = {
+      name: set.name,
+      description: set.description,
+      repetitions: set.repetitions,
+      weight: set.weight,
     };
 
-    if (direction === 'left') {
-      swap(index - 1, index);
-    } else {
-      swap(index, index + 1);
-    }
-
+    const newSets = [...sets];
+    newSets.splice(index + 1, 0, newSet);
     setSets(newSets);
   };
 
@@ -307,7 +287,6 @@ const WorkoutForm = observer(() => {
                       index={index}
                       setDisplaySetDetails={handleSetDisplaySetDetails}
                       duplicateSet={handleDuplicateSet}
-                      moveSet={handleMoveSet}
                       removeSet={removeSet}
                     />
                   ))}

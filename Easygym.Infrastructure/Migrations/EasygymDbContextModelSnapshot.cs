@@ -45,7 +45,7 @@ namespace Easygym.Infrastructure.Migrations
 
                     b.HasIndex("WorkoutId");
 
-                    b.ToTable("Sets");
+                    b.ToTable("Sets", (string)null);
                 });
 
             modelBuilder.Entity("Easygym.Domain.Entities.User", b =>
@@ -75,7 +75,7 @@ namespace Easygym.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Easygym.Domain.Entities.Workout", b =>
@@ -105,7 +105,7 @@ namespace Easygym.Infrastructure.Migrations
 
                     b.HasIndex("TraineeId");
 
-                    b.ToTable("Workouts");
+                    b.ToTable("Workouts", (string)null);
                 });
 
             modelBuilder.Entity("Easygym.Domain.Entities.Set", b =>

@@ -1,5 +1,5 @@
 using Easygym.Domain.Entities;
-
+using Easygym.Domain.Models.Requests;
 namespace Easygym.Domain.Interfaces
 {
     public interface IWorkoutRepository
@@ -7,7 +7,7 @@ namespace Easygym.Domain.Interfaces
         Task<List<Workout>> GetWorkoutsForTraineeAsync(int traineeId);
         Task<Workout> GetWorkoutForTraineeAsync(int workoutId, int traineeId);
         Task AddWorkoutAsync(Workout workout);
-        Task UpdateWorkoutAsync(Workout workout);
+        Task<Workout> UpdateWorkoutAsync(int workoutId, UpdateWorkoutRequest workout);
         Task DeleteWorkoutAsync(int workoutId);
         Task<Workout> GetWorkoutAsync(int workoutId);
     }

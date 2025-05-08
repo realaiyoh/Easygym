@@ -2,6 +2,7 @@ using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
 using Easygym.Domain.Interfaces;
 using Easygym.Domain.Exceptions;
+using Easygym.Domain.Models.Requests;
 namespace Easygym.Application.Services
 {
     public class WorkoutService
@@ -42,6 +43,14 @@ namespace Easygym.Application.Services
             await _workoutRepository.AddWorkoutAsync(workout);
             return workout;
         }
+
+
+        public async Task<Workout> UpdateWorkoutAsync(int traineeId, int workoutId, UpdateWorkoutRequest workout)
+        {
+            await CanAccessWorkout(traineeId);
+            return await _workoutRepository.UpdateWorkoutAsync(workoutId, workout);
+        }
+
 
         public async Task DeleteWorkoutAsync(int traineeId, int workoutId)
         {

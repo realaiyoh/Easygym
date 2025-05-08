@@ -14,6 +14,10 @@ export default class AuthStore {
     makeAutoObservable(this);
   }
 
+  get userId() {
+    return this.user?.id || 0;
+  }
+
   setLoading = (isLoading: boolean) => {
     runInAction(() => {
       this.isLoading = isLoading;
