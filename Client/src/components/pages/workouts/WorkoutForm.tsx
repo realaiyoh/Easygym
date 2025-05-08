@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Set, Workout } from '@/types/Workout';
-import { Dumbbell, Plus, XCircleIcon } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useStore } from '@/store/store';
 import { routes } from '@/lib/constants';
 import { useNavigate, useParams } from 'react-router';
@@ -33,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import SetCard from '@/components/pages/workouts/SetCard';
 
 const WorkoutForm = observer(() => {
   const params = useParams();
@@ -140,7 +141,8 @@ const WorkoutForm = observer(() => {
     toast.success('Set added');
   };
 
-  const removeSet = (index: number, e: React.MouseEvent<SVGSVGElement>) => {
+  const removeSet = (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     e.stopPropagation();
 
     const newSets = [...sets];
@@ -188,6 +190,47 @@ const WorkoutForm = observer(() => {
   const handleSetDisplaySetDetails = (set: Omit<Set, 'id'>) => {
     setDialogSetDetails(set);
     setDisplayDetailsRef.current?.click();
+  };
+
+  const handleDuplicateSet = (
+    set: Omit<Set, 'id'>,
+    index: number,
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const newSets = [...sets];
+    newSets.splice(index + 1, 0, set);
+    setSets(newSets);
+  };
+
+  const handleMoveSet = (
+    index: number,
+    direction: 'left' | 'right',
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const newSets = [...sets];
+
+    const swap = (index1: number, index2: number) => {
+      if (index1 < 0 || index2 < 0) return;
+      if (index1 >= newSets.length || index2 >= newSets.length) return;
+
+      const temp = newSets[index1];
+      newSets[index1] = newSets[index2];
+      newSets[index2] = temp;
+    };
+
+    if (direction === 'left') {
+      swap(index - 1, index);
+    } else {
+      swap(index, index + 1);
+    }
+
+    setSets(newSets);
   };
 
   return (
@@ -246,40 +289,15 @@ const WorkoutForm = observer(() => {
               {sets.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6 mt-4">
                   {sets.map((set, index) => (
-                    <div
+                    <SetCard
                       key={index}
-                      className="flex gap-4 justify-between p-4 border rounded-md w-[200px] hover:bg-card cursor-pointer"
-                      onClick={() => handleSetDisplaySetDetails(set)}
-                    >
-                      <div className="flex flex-col gap-2 w-full">
-                        <div className="flex gap-4 w-full justify-between">
-                          <span className="font-bold">
-                            {set.name || `Set ${index + 1}`}
-                          </span>
-                          <XCircleIcon
-                            onClick={(e) => removeSet(index, e)}
-                            className="h-4 w-4 cursor-pointer mt-1 shrink-0"
-                          />
-                        </div>
-
-                        {set.description && (
-                          <div className="truncate">
-                            <span className="text-sm truncate text-gray-500">
-                              {set.description}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex gap-2 justify-between">
-                          <p>{set.repetitions} Reps</p>
-                          {!!set.weight && set.weight > 0 && (
-                            <div className="flex gap-1 items-center">
-                              <Dumbbell className="h-4 w-4" />
-                              <span>{set.weight}kg</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                      set={set}
+                      index={index}
+                      setDisplaySetDetails={handleSetDisplaySetDetails}
+                      duplicateSet={handleDuplicateSet}
+                      moveSet={handleMoveSet}
+                      removeSet={removeSet}
+                    />
                   ))}
                 </div>
               )}
@@ -392,7 +410,7 @@ const WorkoutForm = observer(() => {
                   <DialogTitle>
                     Set Details - {dialogSetDetails?.name}
                   </DialogTitle>
-                  <DialogDescription className="flex flex-col gap-2">
+                  <DialogDescription className="flex flex-col gap-2 break-all">
                     {dialogSetDetails?.description && (
                       <span>
                         <span className="font-bold">Description:</span>{' '}
