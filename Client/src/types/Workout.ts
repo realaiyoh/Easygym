@@ -15,7 +15,7 @@ export interface Workout {
   traineeId: number;
   trainee?: User;
   sets?: Set[];
-  restTimeSeconds?: number;
+  restTimeSeconds: number;
   createdAt: string;
 }
 

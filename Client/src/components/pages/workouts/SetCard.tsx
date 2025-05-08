@@ -87,6 +87,7 @@ const SetCard = ({
           className={`flex items-center justify-between mt-auto ${!isHovering && 'invisible'}`}
         >
           <Button
+            className="transition-none"
             onClick={(e) => moveSet(index, 'left', e)}
             variant="ghost"
             size="icon"
@@ -94,6 +95,7 @@ const SetCard = ({
             <MoveLeft className="h-4 w-4 cursor-pointer" />
           </Button>
           <Button
+            className="transition-none"
             onClick={(e) => moveSet(index, 'right', e)}
             variant="ghost"
             size="icon"

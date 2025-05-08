@@ -12,7 +12,8 @@ namespace Easygym.Domain.Entities
         public required int TraineeId { get; set; }
         public User? Trainee { get; set; }
         public required List<Set> Sets { get; set; }
-        public int? RestTimeSeconds { get; set; }
+        [Range(0, 600)] // 10 minutes
+        public int RestTimeSeconds { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

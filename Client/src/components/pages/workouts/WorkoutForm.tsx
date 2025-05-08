@@ -34,11 +34,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import SetCard from '@/components/pages/workouts/SetCard';
+import { Progress } from '@/components/ui/progress';
 
 const WorkoutForm = observer(() => {
   const params = useParams();
   const navigate = useNavigate();
   const { workout, auth } = useStore();
+
+  const maxRestTimeMinutes = 10;
+  const defaultRestTimeMinutes = 3;
 
   const setDisplayDetailsRef = useRef<HTMLButtonElement>(null);
 
@@ -72,7 +76,9 @@ const WorkoutForm = observer(() => {
   const workoutFormSchema = z.object({
     name: z.string().optional(),
     description: z.string().optional(),
-    restTimeSeconds: z.coerce.number().optional(),
+    restTimeMinutes: z.coerce.number()
+      .min(0, { message: 'Rest time cannot be negative' })
+      .max(10, { message: 'Rest time must be less than 10 minutes' }),
     sets: z.array(setFormSchema),
   });
 
@@ -81,7 +87,7 @@ const WorkoutForm = observer(() => {
     defaultValues: {
       name: '',
       description: '',
-      restTimeSeconds: 60,
+      restTimeMinutes: defaultRestTimeMinutes,
       sets: [],
     },
   });
@@ -102,8 +108,8 @@ const WorkoutForm = observer(() => {
       workoutForm.setValue('name', workoutData?.name || '');
       workoutForm.setValue('description', workoutData?.description || '');
       workoutForm.setValue(
-        'restTimeSeconds',
-        workoutData?.restTimeSeconds || 60,
+        'restTimeMinutes',
+        (workoutData?.restTimeSeconds || 0) / 60 || defaultRestTimeMinutes,
       );
 
       if (workoutData?.sets?.length) {
@@ -160,6 +166,7 @@ const WorkoutForm = observer(() => {
       ...data,
       sets,
       traineeId: auth.user!.id,
+      restTimeSeconds: Math.round(data.restTimeMinutes * 100) / 100 * 60,
     };
 
     await createWorkout(workoutData);
@@ -234,9 +241,9 @@ const WorkoutForm = observer(() => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-[1000px] mx-auto">
       <div>
-        <h2 className="text-2xl font-bold mb-4">{formNameText}</h2>
+        <h2 className="text-2xl font-bold mb-4 pb-2 border-b border-solid">{formNameText}</h2>
         <Form {...workoutForm}>
           <FormWrapper
             className="w-full"
@@ -273,12 +280,17 @@ const WorkoutForm = observer(() => {
             />
             <FormField
               control={workoutForm.control}
-              name="restTimeSeconds"
+              name="restTimeMinutes"
               render={({ field }) => (
                 <FormItem fullWidth>
-                  <FormLabel>Rest Time (seconds)</FormLabel>
+                  <FormLabel>Rest Time (minutes)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <div className="flex flex-col gap-1 max-w-[50%]">
+                      <Input type="number" min={0} step={0.5} max={maxRestTimeMinutes} {...field} />
+                      <div className="w-full">
+                        <Progress value={field.value * maxRestTimeMinutes} />
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -287,7 +299,7 @@ const WorkoutForm = observer(() => {
             <div className="mt-8">
               <h3 className="text-xl font-bold">Sets</h3>
               {sets.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-6 mt-4">
                   {sets.map((set, index) => (
                     <SetCard
                       key={index}
@@ -302,7 +314,7 @@ const WorkoutForm = observer(() => {
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 w-[50%]">
               <FormField
                 control={setForm.control}
                 name="name"
@@ -366,13 +378,11 @@ const WorkoutForm = observer(() => {
               <Plus className="h-4 w-4 mr-2" /> Add Set
             </Button>
             <div className="flex gap-2">
-              <Button type="submit" className="mt-6">
-                {formNameText}
-              </Button>
+              <Button type="submit" className="mt-6">{workoutId ? 'Update' : 'Create'}</Button>
               {!!workoutId && (
                 <Dialog>
                   <Button variant="destructive" className="mt-6" asChild>
-                    <DialogTrigger>Delete Workout</DialogTrigger>
+                    <DialogTrigger>Delete</DialogTrigger>
                   </Button>
                   <DialogContent>
                     <DialogHeader>
