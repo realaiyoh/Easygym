@@ -7,10 +7,10 @@ namespace Easygym.Application.Services
 {
     public class WorkoutSessionService
     {
-        private readonly IGenericRepository<WorkoutSession> _workoutSessionRepository;
+        private readonly IWorkoutSessionRepository _workoutSessionRepository;
         private readonly WorkoutService _workoutService;
         private readonly CurrentUserService _currentUserService;
-        public WorkoutSessionService(IGenericRepository<WorkoutSession> workoutSessionRepository, WorkoutService workoutService, CurrentUserService currentUserService)
+        public WorkoutSessionService(IWorkoutSessionRepository workoutSessionRepository, WorkoutService workoutService, CurrentUserService currentUserService)
         {
             _workoutSessionRepository = workoutSessionRepository;
             _workoutService = workoutService;

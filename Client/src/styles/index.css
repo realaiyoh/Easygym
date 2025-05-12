@@ -122,6 +122,14 @@
   --height-screen-content: var(--screen-height);
 }
 
+body {
+  @apply w-full max-w-[1000px] mx-auto;
+}
+
+body[data-scroll-locked] {
+  padding: 0 !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
