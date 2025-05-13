@@ -7,7 +7,7 @@ const FormWrapper = ({
   className,
 }: {
   children: ReactNode;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit?: FormEventHandler<HTMLFormElement>;
   className?: string;
 }) => {
   return (

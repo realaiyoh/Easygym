@@ -4,11 +4,22 @@ import { Dumbbell, Calendar, Info, ChevronRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes } from '@/lib/constants';
 import { useNavigate } from 'react-router';
+
 interface WorkoutCardProps {
   workout: Workout;
+  viewOnly?: boolean;
+  compact?: boolean;
+  selected?: boolean;
+  onSelect?: () => void;
 }
 
-const WorkoutCard = ({ workout }: WorkoutCardProps) => {
+const WorkoutCard = ({
+  workout,
+  viewOnly = false,
+  compact = false,
+  selected = false,
+  onSelect,
+}: WorkoutCardProps) => {
   const navigate = useNavigate();
 
   const formattedDate = workout.createdAt
@@ -32,35 +43,39 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
           <h3 className="text-xl font-semibold">
             {workout.name || 'Unnamed Workout'}
           </h3>
-          <div className="flex items-center text-muted-foreground mt-1 text-sm">
-            <Calendar className="h-4 w-4 mr-1" />
-            <span>{formattedDate}</span>
-          </div>
+          {!compact && (
+            <div className="flex items-center text-muted-foreground mt-1 text-sm">
+              <Calendar className="h-4 w-4 mr-1" />
+              <span>{formattedDate}</span>
+            </div>
+          )}
         </div>
-        <Button
-          onClick={handleEditWorkout}
-          variant="ghost"
-          size="icon"
-          aria-label="More details"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
+        {!viewOnly && (
+          <Button
+            onClick={handleEditWorkout}
+            variant="ghost"
+            size="icon"
+            aria-label="More details"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        )}
       </div>
 
-      {workout.description && (
+      {workout.description && !compact && (
         <div className="mt-3 flex items-start">
           <Info className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">{workout.description}</p>
         </div>
       )}
 
-      <div className="mt-4 border-t border-border pt-3">
+      <div className="mt-4 border-t bordeSelectr-border pt-3">
         <div className="flex items-center text-sm">
           <Dumbbell className="h-4 w-4 mr-2 text-primary" />
           <span>{workout.sets?.length || 0} exercises</span>
         </div>
 
-        {workout.sets && workout.sets.length > 0 && (
+        {workout.sets && workout.sets.length > 0 && !compact && (
           <div className="mt-2 space-y-2">
             {workout.sets.slice(0, 2).map((set) => (
               <div
@@ -85,6 +100,17 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
           <div className="flex items-center text-sm mt-2">
             <Clock className="h-4 w-4 mr-2 text-primary" />
             <span>Rest time: {restTimeInMinutes} min</span>
+          </div>
+        )}
+
+        {(viewOnly || selected) && (
+          <div className="flex items-center text-sm mt-2">
+            <Button
+              variant={selected ? 'default' : 'outline'}
+              onClick={onSelect}
+            >
+              {selected ? 'Selected' : 'Select'} workout
+            </Button>
           </div>
         )}
       </div>

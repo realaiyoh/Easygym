@@ -58,7 +58,7 @@ namespace Easygym.Application.Services
             await _workoutRepository.DeleteWorkoutAsync(workoutId);
         }
 
-        private async Task CanAccessWorkout(int traineeId)
+        public async Task CanAccessWorkout(int traineeId)
         {
             var currentUser = await _currentUserService.GetCurrentUserAsync();
 

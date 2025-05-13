@@ -33,7 +33,7 @@ namespace Easygym.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Role.All)]
+        [Authorize(Roles = $"{Role.Client}, {Role.Trainer}")]
         public async Task<IActionResult> CreateWorkout(Workout workout)
         {
             var newWorkout = await _workoutService.CreateWorkoutAsync(workout);
@@ -41,7 +41,7 @@ namespace Easygym.Api.Controllers
         }
 
         [HttpPut("trainee/{traineeId}/{workoutId}")]
-        [Authorize(Roles = Role.All)]
+        [Authorize(Roles = $"{Role.Client}, {Role.Trainer}")]
         public async Task<IActionResult> UpdateWorkout(int traineeId, int workoutId, [FromBody] UpdateWorkoutRequest workout)
         {
             var updatedWorkout = await _workoutService.UpdateWorkoutAsync(traineeId, workoutId, workout);
@@ -49,7 +49,7 @@ namespace Easygym.Api.Controllers
         }
 
         [HttpDelete("trainee/{traineeId}/{workoutId}")]
-        [Authorize(Roles = Role.All)]
+        [Authorize(Roles = $"{Role.Client}, {Role.Trainer}")]
         public async Task<IActionResult> DeleteWorkout(int traineeId, int workoutId)
         {
             await _workoutService.DeleteWorkoutAsync(traineeId, workoutId);

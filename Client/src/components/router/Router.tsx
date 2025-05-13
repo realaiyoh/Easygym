@@ -8,8 +8,9 @@ import ProtectedRoute from '@/components/router/ProtectedRoute';
 import Profile from '@/components/pages/user/Profile';
 import AuthRoute from '@/components/router/AuthRoute';
 import Workouts from '@/components/pages/workouts/Workouts';
-import WorkoutForm from '@/components/pages/workouts/WorkoutForm';
-
+import Workout from '@/components/pages/workouts/Workout';
+import WorkoutSessions from '@/components/pages/workouts/WorkoutSessions';
+import WorkoutSession from '@/components/pages/workouts/WorkoutSession';
 const Router = () => {
   return (
     <BrowserRouter>
@@ -28,8 +29,16 @@ const Router = () => {
             <Route path={routes.Profile} element={<Profile />} />
             <Route path={routes.Workouts} element={<Workouts />} />
             <Route path={routes.Workout}>
-              <Route path="create" element={<WorkoutForm />} />
-              <Route path=":id/edit" element={<WorkoutForm />} />
+              <Route path="create" element={<Workout />} />
+              <Route path=":id/edit" element={<Workout />} />
+            </Route>
+            <Route
+              path={routes.WorkoutSessions}
+              element={<WorkoutSessions />}
+            />
+            <Route path={routes.WorkoutSession}>
+              <Route path="create" element={<WorkoutSession />} />
+              <Route path=":id/edit" element={<WorkoutSession />} />
             </Route>
           </Route>
         </Route>
