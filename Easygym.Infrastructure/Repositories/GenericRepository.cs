@@ -30,10 +30,11 @@ namespace Easygym.Infrastructure.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
+            var dbEntry = await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return dbEntry.Entity;
         }
 
         public async Task UpdateAsync(T entity)

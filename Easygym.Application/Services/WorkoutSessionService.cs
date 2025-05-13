@@ -37,10 +37,10 @@ namespace Easygym.Application.Services
             return workoutSession;
         }
 
-        public async Task CreateWorkoutSessionAsync(WorkoutSession workoutSession)
+        public async Task<WorkoutSession> CreateWorkoutSessionAsync(WorkoutSession workoutSession)
         {
             await _workoutService.CanAccessWorkout(workoutSession.TraineeId);
-            await _workoutSessionRepository.AddAsync(workoutSession);
+            return await _workoutSessionRepository.AddAsync(workoutSession);
         }
 
         public async Task UpdateWorkoutSessionAsync(UpdateWorkoutSessionRequest workoutSession)

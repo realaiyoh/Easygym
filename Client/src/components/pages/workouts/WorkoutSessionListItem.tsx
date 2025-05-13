@@ -27,7 +27,7 @@ const WorkoutSessionCard = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-between items-center rounded-lg p-2 hover:bg-card transition-all cursor-pointer">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center justify-between rounded-lg p-2 hover:bg-card transition-all cursor-pointer">
         <h3 className="font-semibold">
           {session.workout?.name || 'Workout Session'}
         </h3>

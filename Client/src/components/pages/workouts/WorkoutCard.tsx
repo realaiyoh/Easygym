@@ -9,6 +9,7 @@ interface WorkoutCardProps {
   workout: Workout;
   viewOnly?: boolean;
   compact?: boolean;
+  selected?: boolean;
   onSelect?: () => void;
 }
 
@@ -16,6 +17,7 @@ const WorkoutCard = ({
   workout,
   viewOnly = false,
   compact = false,
+  selected = false,
   onSelect,
 }: WorkoutCardProps) => {
   const navigate = useNavigate();
@@ -101,10 +103,13 @@ const WorkoutCard = ({
           </div>
         )}
 
-        {viewOnly && (
+        {(viewOnly || selected) && (
           <div className="flex items-center text-sm mt-2">
-            <Button variant="outline" onClick={onSelect}>
-              Select workout
+            <Button
+              variant={selected ? 'default' : 'outline'}
+              onClick={onSelect}
+            >
+              {selected ? 'Selected' : 'Select'} workout
             </Button>
           </div>
         )}
