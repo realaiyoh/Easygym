@@ -13,5 +13,5 @@ export const routes = {
   WorkoutSessions: '/workout-sessions',
   WorkoutSession: '/workout-session',
   CreateWorkoutSession: '/workout-session/create',
-  EditWorkoutSession: (id: number) => `/workout-session/${id}/edit`,
+  ViewWorkoutSession: (id: number) => `/workout-session/${id}`,
 };

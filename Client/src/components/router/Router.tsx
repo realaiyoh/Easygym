@@ -38,7 +38,7 @@ const Router = () => {
             />
             <Route path={routes.WorkoutSession}>
               <Route path="create" element={<WorkoutSession />} />
-              <Route path=":id/edit" element={<WorkoutSession />} />
+              <Route path=":id" element={<WorkoutSession />} />
             </Route>
           </Route>
         </Route>

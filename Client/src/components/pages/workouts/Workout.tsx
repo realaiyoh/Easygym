@@ -118,6 +118,8 @@ const WorkoutForm = observer(() => {
   useEffect(() => {
     if (!workoutId) return;
 
+    let ignore = false;
+
     const fetchWorkoutAndPopulateForm = async () => {
       // On reload, workouts are cleared, so we need to fetch this workout again,
       // nothing will happen if the workout is already in the store
@@ -125,10 +127,16 @@ const WorkoutForm = observer(() => {
 
       const existingWorkout = workout.workouts.find((w) => w.id === workoutId);
 
-      populateFormCached(existingWorkout);
+      if (!ignore) {
+        populateFormCached(existingWorkout);
+      }
     };
 
     fetchWorkoutAndPopulateForm();
+
+    return () => {
+      ignore = true;
+    };
   }, [
     auth.userId,
     workoutId,

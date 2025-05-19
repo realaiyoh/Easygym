@@ -25,8 +25,8 @@ const workoutSessionService = {
     );
     return updatedSession;
   },
-  deleteWorkoutSession: async (traineeId: number, sessionId: number) => {
-    await requests.delete(`/workoutsession/trainee/${traineeId}/${sessionId}`);
+  deleteWorkoutSession: async (sessionId: number) => {
+    await requests.delete(`/workoutsession/${sessionId}`);
   },
 };
 

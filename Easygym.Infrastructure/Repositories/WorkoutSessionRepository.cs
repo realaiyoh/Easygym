@@ -17,14 +17,16 @@ namespace Easygym.Infrastructure.Repositories
         public new async Task<IEnumerable<WorkoutSession>> GetAllAsync()
         {
             return await _context.WorkoutSessions
-                .Include(ws => ws.Workout)
+                .Include(ws => ws.Workout!)
+                    .ThenInclude(w => w.Sets)
                 .ToListAsync();
         }
 
         public new async Task<WorkoutSession?> GetByIdAsync(int id)
         {
             return await _context.WorkoutSessions
-                .Include(ws => ws.Workout)
+                .Include(ws => ws.Workout!)
+                    .ThenInclude(w => w.Sets)
                 .FirstOrDefaultAsync(ws => ws.Id == id);
         }
     }

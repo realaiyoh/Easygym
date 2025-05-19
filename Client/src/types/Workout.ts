@@ -19,6 +19,13 @@ export interface Workout {
   createdAt: string;
 }
 
+export interface WorkoutSession {
+  id: number;
+  workout: Workout;
+  perceivedDifficulty?: number;
+  notes?: string;
+}
+
 export interface CreateWorkoutRequest {
   name?: string;
   description?: string;

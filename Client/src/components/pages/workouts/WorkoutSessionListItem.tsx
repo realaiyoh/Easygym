@@ -5,11 +5,13 @@ import { CalendarClock, Clock, BarChart } from 'lucide-react';
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
   addSeparator?: boolean;
+  onClick: () => void;
 }
 
 const WorkoutSessionCard = ({
   session,
   addSeparator,
+  onClick,
 }: WorkoutSessionCardProps) => {
   const startTime = new Date(session.startTime);
   const endTime = new Date(session.endTime);
@@ -26,8 +28,8 @@ const WorkoutSessionCard = ({
     : 'Not rated';
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center justify-between rounded-lg p-2 hover:bg-card transition-all cursor-pointer">
+    <div onClick={onClick} className="flex flex-col gap-2 cursor-pointer">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center justify-between rounded-lg p-2 hover:bg-card transition-all">
         <h3 className="font-semibold">
           {session.workout?.name || 'Workout Session'}
         </h3>

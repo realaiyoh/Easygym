@@ -1,17 +1,23 @@
 import { useStore } from '@/store/store';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { routes } from '@/lib/constants';
 import { observer } from 'mobx-react-lite';
 import { Workout } from '@/types/Workout';
+import { WorkoutSession as WorkoutSessionType } from '@/types/WorkoutSession';
 import { Progress } from '@/components/ui/progress';
 import {
   ArrowRight,
   CheckCircle,
   DumbbellIcon,
+  ListIcon,
   RepeatIcon,
+  TimerIcon,
+  CalendarClock,
+  Clock,
+  BarChart,
 } from 'lucide-react';
 import WorkoutCard from './WorkoutCard';
 import { useForm } from 'react-hook-form';
@@ -28,13 +34,35 @@ import {
 import FormWrapper from '@/components/ui/widgets/FormWrapper';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogFooter,
+  DialogTrigger,
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+  DialogClose,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 const WorkoutSession = observer(() => {
-  const { workoutSession, workout, auth } = useStore();
-  const { createWorkoutSession } = workoutSession;
+  const { workoutSession: workoutSessionStore, workout, auth } = useStore();
+  const {
+    workoutSessions,
+    createWorkoutSession,
+    getWorkoutSession,
+    fetchWorkoutSessions,
+    deleteWorkoutSession,
+  } = workoutSessionStore;
   const { workouts, fetchWorkouts } = workout;
   const navigate = useNavigate();
 
+  const params = useParams();
+  const viewMode = useMemo(() => !!params.id, [params.id]);
+
+  const [workoutSession, setWorkoutSession] = useState<
+    WorkoutSessionType | undefined
+  >(undefined);
   const [sessionStarted, setSessionStarted] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
@@ -62,8 +90,35 @@ const WorkoutSession = observer(() => {
   });
 
   useEffect(() => {
-    if (!workouts.length) fetchWorkouts(auth.userId);
-  }, [fetchWorkouts, auth.userId, workouts.length]);
+    if (viewMode) return;
+    let ignore = false;
+
+    if (!workouts.length && !ignore) fetchWorkouts(auth.userId);
+
+    return () => {
+      ignore = true;
+    };
+  }, [viewMode, workouts.length, fetchWorkouts, auth.userId]);
+
+  useEffect(() => {
+    const setupWorkouts = async () => {
+      if (!viewMode) return;
+      if (!workoutSessions.length) await fetchWorkoutSessions(auth.userId);
+
+      const foundWorkoutSession = getWorkoutSession(Number(params.id));
+      setWorkoutSession(foundWorkoutSession as WorkoutSessionType);
+    };
+
+    setupWorkouts();
+  }, [
+    fetchWorkouts,
+    auth.userId,
+    viewMode,
+    params.id,
+    getWorkoutSession,
+    fetchWorkoutSessions,
+    workoutSessions.length,
+  ]);
 
   const handleStartSession = () => {
     if (!selectedWorkout) return;
@@ -155,9 +210,18 @@ const WorkoutSession = observer(() => {
     workoutSessionForm.handleSubmit(handleEndSession)();
   };
 
+  const handleDeleteSession = () => {
+    if (!viewMode) return;
+
+    deleteWorkoutSession(Number(params.id));
+    toast.success('Workout session deleted successfully');
+
+    navigate(routes.WorkoutSessions);
+  };
+
   return (
     <>
-      {!sessionStarted && (
+      {!sessionStarted && !viewMode && (
         <div className="workout-card-wrapper">
           {workouts.map((workout) => (
             <WorkoutCard
@@ -169,6 +233,144 @@ const WorkoutSession = observer(() => {
               onSelect={() => setSelectedWorkout(workout)}
             />
           ))}
+        </div>
+      )}
+
+      {viewMode && (
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-2xl font-bold">
+              {workoutSession?.workout?.name + ' Session' || 'Unnamed Workout'}
+            </h1>
+            {workoutSession?.workout?.description && (
+              <p className="text-muted-foreground">
+                {workoutSession.workout.description}
+              </p>
+            )}
+          </div>
+
+          <div className="flex gap-4">
+            <div
+              className={`bg-card rounded-lg shadow-sm border border-border p-4 ${
+                !workoutSession?.notes ? 'w-full' : ''
+              }`}
+            >
+              <h2 className="text-lg font-semibold mb-4">Session Details</h2>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2 items-center">
+                  <CalendarClock className="h-4 w-4" />
+                  <span className="font-medium">Date: </span>
+                  <span>
+                    {new Date(
+                      workoutSession?.startTime || '',
+                    ).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center whitespace-nowrap">
+                  <Clock className="h-4 w-4" />
+                  <span className="font-medium">Duration: </span>
+                  <span>
+                    {Math.round(
+                      (new Date(workoutSession?.endTime || '').getTime() -
+                        new Date(workoutSession?.startTime || '').getTime()) /
+                        1000 /
+                        60,
+                    )}{' '}
+                    minutes
+                  </span>
+                </div>
+                {workoutSession?.perceivedDifficulty && (
+                  <div className="flex gap-2 items-center">
+                    <BarChart className="h-4 w-4" />
+                    <span className="font-medium">Difficulty: </span>
+                    <span>{workoutSession.perceivedDifficulty}/10</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {workoutSession?.notes && (
+              <div className="bg-card rounded-lg shadow-sm border border-border p-4 w-full">
+                <h2 className="text-lg font-semibold mb-4">Notes</h2>
+                <p className="text-muted-foreground whitespace-pre-wrap">
+                  {workoutSession.notes}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+              <h2 className="text-lg font-semibold mb-4">Workout Details</h2>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2 items-center">
+                  <ListIcon className="h-4 w-4" />
+                  <span className="font-medium">Exercises: </span>
+                  <span>{workoutSession?.workout?.sets?.length || 0}</span>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <TimerIcon className="h-4 w-4" />
+                  <span className="font-medium">Rest time: </span>
+                  <span>
+                    {workoutSession?.workout?.restTimeSeconds || 0} seconds
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+            <h2 className="text-lg font-semibold mb-4">Exercises</h2>
+            <div className="flex flex-col gap-4">
+              {workoutSession?.workout?.sets.map((set) => (
+                <div
+                  key={set.id}
+                  className="flex flex-col gap-2 p-3 rounded-md bg-muted/50"
+                >
+                  <div className="font-medium">{set.name}</div>
+                  <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+                    <div className="flex gap-2 items-center">
+                      <RepeatIcon className="h-4 w-4" />
+                      <span>{set.repetitions} repetitions</span>
+                    </div>
+                    {!!set.weight && set.weight > 0 && (
+                      <div className="flex gap-2 items-center">
+                        <DumbbellIcon className="h-4 w-4" />
+                        <span>{set.weight} kg</span>
+                      </div>
+                    )}
+                    {set.description && (
+                      <p className="mt-1">{set.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Dialog>
+            <Button className="self-start" variant="destructive" asChild>
+              <DialogTrigger>Delete</DialogTrigger>
+            </Button>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your workout session and its related data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="destructive" onClick={handleDeleteSession}>
+                  Delete Workout
+                </Button>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
 

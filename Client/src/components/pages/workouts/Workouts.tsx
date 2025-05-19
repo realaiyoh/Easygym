@@ -13,7 +13,15 @@ const Workouts = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchWorkouts(auth.user!.id);
+    let ignore = false;
+
+    if (!ignore) {
+      fetchWorkouts(auth.user!.id);
+    }
+
+    return () => {
+      ignore = true;
+    };
   }, [fetchWorkouts, auth.user]);
 
   const handleCreateWorkout = () => {

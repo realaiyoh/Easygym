@@ -13,11 +13,23 @@ const WorkoutSessions = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchWorkoutSessions(auth.user!.id);
+    let ignore = false;
+
+    if (!ignore) {
+      fetchWorkoutSessions(auth.user!.id);
+    }
+
+    return () => {
+      ignore = true;
+    };
   }, [fetchWorkoutSessions, auth.user]);
 
   const handleCreateSession = () => {
     navigate(routes.CreateWorkoutSession);
+  };
+
+  const handleOpenSession = (sessionId: number) => {
+    navigate(routes.ViewWorkoutSession(sessionId));
   };
 
   return (
@@ -39,6 +51,7 @@ const WorkoutSessions = observer(() => {
                   index !== workoutSessions.length - 1 ||
                   workoutSessions.length === 1
                 }
+                onClick={() => handleOpenSession(session.id)}
               />
             ))}
           </div>

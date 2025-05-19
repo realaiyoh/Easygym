@@ -13,6 +13,10 @@ export default class WorkoutSessionStore {
     makeAutoObservable(this);
   }
 
+  getWorkoutSession = (sessionId: number) => {
+    return this.workoutSessions.find((s) => s.id === sessionId);
+  };
+
   fetchWorkoutSessions = async (traineeId: number) => {
     runInAction(() => {
       this.isLoading = true;
@@ -119,14 +123,14 @@ export default class WorkoutSessionStore {
     }
   };
 
-  deleteWorkoutSession = async (traineeId: number, sessionId: number) => {
+  deleteWorkoutSession = async (sessionId: number) => {
     runInAction(() => {
       this.isLoading = true;
       this.error = null;
     });
 
     try {
-      await workoutSessionService.deleteWorkoutSession(traineeId, sessionId);
+      await workoutSessionService.deleteWorkoutSession(sessionId);
       runInAction(() => {
         this.workoutSessions = this.workoutSessions.filter((s) => s.id !== sessionId);
       });
