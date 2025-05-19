@@ -14,9 +14,16 @@ export interface Workout {
   description?: string;
   traineeId: number;
   trainee?: User;
-  sets?: Set[];
+  sets: Set[];
   restTimeSeconds: number;
   createdAt: string;
+}
+
+export interface WorkoutSession {
+  id: number;
+  workout: Workout;
+  perceivedDifficulty?: number;
+  notes?: string;
 }
 
 export interface CreateWorkoutRequest {

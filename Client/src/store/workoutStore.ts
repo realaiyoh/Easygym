@@ -13,6 +13,10 @@ export default class WorkoutStore {
     makeAutoObservable(this);
   }
 
+  getWorkout = (workoutId: number) => {
+    return this.workouts.find((w) => w.id === workoutId);
+  };
+
   fetchWorkouts = async (traineeId: number) => {
     runInAction(() => {
       this.isLoading = true;

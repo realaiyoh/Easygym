@@ -52,14 +52,12 @@ const WorkoutForm = observer(() => {
     [workoutId],
   );
 
-  const {
-    createWorkout,
-    updateWorkout,
-    deleteWorkout,
-    fetchWorkout,
-  } = workout;
+  const { createWorkout, updateWorkout, deleteWorkout, fetchWorkout } = workout;
   const [sets, setSets] = useState<Omit<Set, 'id'>[] | Set[]>([]);
-  const [dialogSetDetails, setDialogSetDetails] = useState<Omit<Set, 'id'> | null>(null);
+  const [dialogSetDetails, setDialogSetDetails] = useState<Omit<
+    Set,
+    'id'
+  > | null>(null);
 
   const setFormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -73,7 +71,8 @@ const WorkoutForm = observer(() => {
   const workoutFormSchema = z.object({
     name: z.string().optional(),
     description: z.string().optional(),
-    restTimeMinutes: z.coerce.number()
+    restTimeMinutes: z.coerce
+      .number()
       .min(0, { message: 'Rest time cannot be negative' })
       .max(10, { message: 'Rest time must be less than 10 minutes' }),
     sets: z.array(setFormSchema),
@@ -119,6 +118,8 @@ const WorkoutForm = observer(() => {
   useEffect(() => {
     if (!workoutId) return;
 
+    let ignore = false;
+
     const fetchWorkoutAndPopulateForm = async () => {
       // On reload, workouts are cleared, so we need to fetch this workout again,
       // nothing will happen if the workout is already in the store
@@ -126,10 +127,16 @@ const WorkoutForm = observer(() => {
 
       const existingWorkout = workout.workouts.find((w) => w.id === workoutId);
 
-      populateFormCached(existingWorkout);
+      if (!ignore) {
+        populateFormCached(existingWorkout);
+      }
     };
 
     fetchWorkoutAndPopulateForm();
+
+    return () => {
+      ignore = true;
+    };
   }, [
     auth.userId,
     workoutId,
@@ -163,7 +170,7 @@ const WorkoutForm = observer(() => {
       ...data,
       sets,
       traineeId: auth.userId,
-      restTimeSeconds: Math.round(data.restTimeMinutes * 100) / 100 * 60,
+      restTimeSeconds: (Math.round(data.restTimeMinutes * 100) / 100) * 60,
     };
 
     if (!workoutId) {
@@ -221,9 +228,11 @@ const WorkoutForm = observer(() => {
   };
 
   return (
-    <div className="space-y-8 max-w-[1000px] mx-auto">
+    <div className="space-y-8 mx-auto">
       <div>
-        <h2 className="text-2xl font-bold mb-4 pb-2 border-b border-solid">{formNameText}</h2>
+        <h2 className="text-2xl font-bold mb-4 pb-2 border-b border-solid">
+          {formNameText}
+        </h2>
         <Form {...workoutForm}>
           <FormWrapper
             className="w-full"
@@ -266,7 +275,13 @@ const WorkoutForm = observer(() => {
                   <FormLabel>Rest Time (minutes)</FormLabel>
                   <FormControl>
                     <div className="flex flex-col gap-1 max-w-[50%]">
-                      <Input type="number" min={0} step={0.5} max={maxRestTimeMinutes} {...field} />
+                      <Input
+                        type="number"
+                        min={0}
+                        step={0.5}
+                        max={maxRestTimeMinutes}
+                        {...field}
+                      />
                       <div className="w-full">
                         <Progress value={field.value * maxRestTimeMinutes} />
                       </div>
@@ -357,7 +372,9 @@ const WorkoutForm = observer(() => {
               <Plus className="h-4 w-4 mr-2" /> Add Set
             </Button>
             <div className="flex gap-2">
-              <Button type="submit" className="mt-6">{workoutId ? 'Update' : 'Create'}</Button>
+              <Button type="submit" className="mt-6">
+                {workoutId ? 'Update' : 'Create'}
+              </Button>
               {!!workoutId && (
                 <Dialog>
                   <Button variant="destructive" className="mt-6" asChild>

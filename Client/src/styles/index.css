@@ -122,6 +122,14 @@
   --height-screen-content: var(--screen-height);
 }
 
+body {
+  @apply w-full max-w-[1000px] mx-auto;
+}
+
+body[data-scroll-locked] {
+  padding: 0 !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -160,4 +168,8 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.workout-card-wrapper {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
 }
