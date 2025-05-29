@@ -1,3 +1,4 @@
+using Easygym.Api.Models.Requests;
 using Easygym.Application.Services;
 using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
@@ -25,9 +26,9 @@ namespace Easygym.Api.Controllers
 
         [Authorize(Roles = $"{Role.Trainer}, {Role.Client}")]
         [HttpPost]
-        public async Task<IActionResult> CreateInvitation(Invitation invitation)
+        public async Task<IActionResult> CreateInvitation([FromBody] CreateInvitationRequest request)
         {
-            var newInvitation = await _invitationService.CreateInvitation(invitation);
+            var newInvitation = await _invitationService.CreateInvitation(request);
             return Ok(newInvitation);
         }
 

@@ -52,6 +52,7 @@ namespace Easygym.Api.Middlewares
                 WorkoutSessionNotFoundException => (HttpStatusCode.NotFound, exception.Message),
                 // Invitation exceptions
                 InvitationNotFoundException => (HttpStatusCode.NotFound, exception.Message),
+                InvitationAlreadyExistsException => (HttpStatusCode.BadRequest, exception.Message),
                 // Other app exceptions
                 ForbiddenAccessException => (HttpStatusCode.Forbidden, exception.Message),
                 AppException => (HttpStatusCode.BadRequest, exception.Message),

@@ -18,3 +18,9 @@ export interface Invitation {
   createdAt: Date;
   resolvedAt?: Date;
 }
+
+export interface CreateInvitationRequest {
+  clientEmail?: string;
+  trainerEmail?: string;
+  message?: string;
+}

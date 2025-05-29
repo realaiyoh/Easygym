@@ -23,5 +23,9 @@ namespace Easygym.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<bool> IsInvitationAlreadySent(int clientId, int trainerId)
+        {
+            return await _context.Invitations.AnyAsync(i => i.ClientId == clientId && i.TrainerId == trainerId);
+        }
     }
 }

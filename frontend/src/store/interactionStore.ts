@@ -1,21 +1,16 @@
 import interactionService from '@/api/services/interactionService';
 import { getErrorMessage } from '@/lib/utils';
-import { Invitation, InvitationStatus } from '@/types/Interaction';
+import { CreateInvitationRequest, Invitation, InvitationStatus } from '@/types/Interaction';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class InteractionStore {
   invitations: Invitation[] = [];
   isLoading: boolean = false;
   error: string | null = null;
-  invitationFetchPromise: Promise<Invitation> | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
-
-  getInvitation = (invitationId: number) => {
-    return this.invitations.find((i) => i.id === invitationId);
-  };
 
   fetchInvitations = async () => {
     runInAction(() => {
@@ -39,7 +34,12 @@ export default class InteractionStore {
     });
   };
 
-  createInvitation = async (invitation: Invitation) => {
+  createInvitation = async (invitation: CreateInvitationRequest) => {
+    runInAction(() => {
+      this.isLoading = true;
+      this.error = null;
+    });
+
     try {
       const newInvitation = await interactionService.createInvitation(invitation);
       runInAction(() => {
@@ -50,6 +50,10 @@ export default class InteractionStore {
         this.error = getErrorMessage(error);
       });
     }
+
+    runInAction(() => {
+      this.isLoading = false;
+    });
   };
 
   resolveInvitation = async (invitationId: number, status: InvitationStatus) => {

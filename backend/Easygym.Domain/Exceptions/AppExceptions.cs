@@ -67,6 +67,11 @@ namespace Easygym.Domain.Exceptions
         public InvitationNotFoundException() : base("Invitation not found") { }
     }
 
+    public class InvitationAlreadyExistsException : AppException
+    {
+        public InvitationAlreadyExistsException() : base("Invitation already exists") { }
+    }
+
     // For general validation errors
     public class ValidationException : AppException
     {
