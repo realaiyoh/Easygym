@@ -13,7 +13,9 @@ namespace Easygym.Domain.Entities
         public User? Client { get; set; }
         public required int TrainerId { get; set; }
         public User? Trainer { get; set; }
+        public int InitiatorId { get; set; }
         public InvitationStatus? Status { get; set; }
+        public string? Message { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ResolvedAt { get; set; }
     }

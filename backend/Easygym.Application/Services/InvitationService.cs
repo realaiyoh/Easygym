@@ -30,8 +30,11 @@ namespace Easygym.Application.Services
 
         public async Task<Invitation> CreateInvitation(Invitation invitation)
         {
+            var currentUser = await _currentUserService.GetCurrentUserAsync();
+
             await CanAccessInvitation(invitation.ClientId, invitation.TrainerId);
 
+            invitation.InitiatorId = currentUser.Id;
             invitation.Status = InvitationStatus.Pending;
             return await _invitationRepository.AddAsync(invitation);
         }
@@ -44,6 +47,10 @@ namespace Easygym.Application.Services
 
         public async Task<Invitation> ResolveInvitation(int id, InvitationStatus status)
         {
+            // TODO: Check if the current user already has a trainer
+            // *A trainer can have multiple clients
+            // *A client can have only one trainer
+
             var invitation = await GetInvitation(id);
 
             await CanAccessInvitation(invitation.ClientId, invitation.TrainerId);
