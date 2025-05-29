@@ -18,5 +18,6 @@ namespace Easygym.Infrastructure.Persistence
         public DbSet<Workout> Workouts { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<WorkoutSession> WorkoutSessions { get; set; }
+        public DbSet<Invitation> Invitations { get; set; }
     }
 }

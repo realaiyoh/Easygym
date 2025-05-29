@@ -1,6 +1,6 @@
 import api from '@/api/api';
 import { authTokenKey } from '@/lib/constants';
-import { UserRegisterRequest } from '@/types/User';
+import { UserRegisterRequest, UserRole } from '@/types/User';
 import { User } from '@/types/User';
 import { getErrorMessage } from '@/lib/utils';
 import { makeAutoObservable, runInAction } from 'mobx';
@@ -16,6 +16,18 @@ export default class AuthStore {
 
   get userId() {
     return this.user?.id || 0;
+  }
+
+  get isUserClient() {
+    return this.user?.role === UserRole.Client;
+  }
+
+  get isUserTrainer() {
+    return this.user?.role === UserRole.Trainer;
+  }
+
+  get isUserAdmin() {
+    return this.user?.role === UserRole.Admin;
   }
 
   setLoading = (isLoading: boolean) => {

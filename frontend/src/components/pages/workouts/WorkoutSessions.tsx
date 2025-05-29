@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
 import { routes } from '@/lib/constants';
 import { PlayCircle, PlusCircle } from 'lucide-react';
+import EmptyState from '@/components/ui/widgets/EmptyState';
 
 const WorkoutSessions = observer(() => {
   const { workoutSession, auth } = useStore();
@@ -59,18 +60,13 @@ const WorkoutSessions = observer(() => {
       )}
 
       {workoutSessions.length === 0 && !isLoading && (
-        <div className="flex flex-col items-center justify-center p-8 border rounded-md text-center">
-          <h3 className="text-xl font-semibold mb-2">
-            No workout sessions yet
-          </h3>
-          <p className="text-gray-500 mb-4">
-            Complete your first workout to track your progress and performance.
-          </p>
-          <Button onClick={handleCreateSession}>
-            <PlayCircle className="h-4 w-4" />
-            Start Your First Session
-          </Button>
-        </div>
+        <EmptyState
+          title="No workout sessions yet"
+          description="Complete your first workout to track your progress and performance."
+          buttonText="Start Your First Session"
+          buttonAction={handleCreateSession}
+          buttonIcon={<PlayCircle className="h-4 w-4" />}
+        />
       )}
     </div>
   );
