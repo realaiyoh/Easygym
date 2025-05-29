@@ -1,0 +1,132 @@
+import { Invitation, InvitationStatus } from '@/types/Interaction';
+import { Button } from '@/components/ui/button';
+import {
+  User,
+  Calendar,
+  MessageSquare,
+  Check,
+  X,
+  Mail,
+  DotIcon,
+} from 'lucide-react';
+import { formatDistance } from 'date-fns';
+import { useStore } from '@/store/store';
+import { toast } from 'sonner';
+import InvitationBadge from '@/components/pages/user/InvitationBadge';
+
+interface InvitationsListItemProps {
+  invitation: Invitation;
+}
+
+const InvitationsListItem = ({ invitation }: InvitationsListItemProps) => {
+  const { interactionStore, auth } = useStore();
+
+  const handleAccept = async () => {
+    await interactionStore.resolveInvitation(
+      invitation.id,
+      InvitationStatus.Accepted,
+    );
+    if (interactionStore.error) {
+      toast.error(interactionStore.error);
+    } else {
+      toast.success('Invitation accepted!');
+    }
+  };
+
+  const handleReject = async () => {
+    await interactionStore.resolveInvitation(
+      invitation.id,
+      InvitationStatus.Rejected,
+    );
+    if (interactionStore.error) {
+      toast.error(interactionStore.error);
+    } else {
+      toast.success('Invitation rejected');
+    }
+  };
+
+  const isCurrentUserInitiator = invitation.initiatorId === auth.userId;
+  const isPending = invitation.status === InvitationStatus.Pending;
+
+  const otherUser = auth.isUserClient ? invitation.trainer : invitation.client;
+
+  const relativeDateCreated = formatDistance(
+    new Date(invitation.createdAt),
+    new Date(),
+    { addSuffix: true },
+  );
+
+  return (
+    <div className="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-all">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <User className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg">
+              {otherUser?.name || 'Unknown User'}
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Mail className="h-3 w-3" />
+              {otherUser?.email || 'No email'}
+            </div>
+          </div>
+        </div>
+        <InvitationBadge status={invitation.status} />
+      </div>
+
+      <div className="flex items-center gap-0.5 text-sm text-muted-foreground mb-3">
+        <span className="px-2 py-1 bg-secondary rounded text-xs font-medium">
+          {otherUser?.role}
+        </span>
+        <DotIcon className="h-3 w-3" />
+        <span>
+          {isCurrentUserInitiator ? 'Sent invitation' : 'Received invitation'}
+        </span>
+      </div>
+
+      {invitation.message && (
+        <div className="bg-background rounded-md p-3 mb-3">
+          <div className="flex items-start gap-2">
+            <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5" />
+            <p className="text-sm">{invitation.message}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <Calendar className="h-3 w-3" />
+          {relativeDateCreated}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {isPending && !isCurrentUserInitiator && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleReject}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+              >
+                <X className="h-3 w-3 mr-1" />
+                Reject
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleAccept}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Check className="h-3 w-3 mr-1" />
+                Accept
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InvitationsListItem;

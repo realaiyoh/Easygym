@@ -1,9 +1,9 @@
 import { User } from "@/types/User";
 
 export enum InvitationStatus {
-  Pending = 'pending',
-  Accepted = 'accepted',
-  Rejected = 'rejected',
+  Pending = 'Pending',
+  Accepted = 'Accepted',
+  Rejected = 'Rejected',
 }
 
 export interface Invitation {

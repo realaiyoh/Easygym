@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { titleize } from '@/lib/utils';
+import InvitationsListItem from '@/components/pages/user/InvitationsListItem';
 
 const Invitations = observer(() => {
   const { interactionStore, auth } = useStore();
@@ -159,7 +160,17 @@ const Invitations = observer(() => {
       )}
 
       {invitations.length > 0 && !isLoading && (
-        <Button onClick={handleOpenInviteModal}>Send invite</Button>
+        <div className="flex flex-col gap-4">
+          <p className="text-sm text-muted-foreground">
+            You have {invitations.length} invitations.
+          </p>
+          <Button className="self-start" onClick={handleOpenInviteModal}>
+            Send invite
+          </Button>
+          {invitations.map((invitation) => (
+            <InvitationsListItem key={invitation.id} invitation={invitation} />
+          ))}
+        </div>
       )}
     </div>
   );
