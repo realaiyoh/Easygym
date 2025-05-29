@@ -104,20 +104,11 @@ const InvitationsListItem = ({ invitation }: InvitationsListItemProps) => {
         <div className="flex items-center gap-2">
           {isPending && !isCurrentUserInitiator && (
             <>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleReject}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-              >
+              <Button size="sm" variant="destructive" onClick={handleReject}>
                 <X className="h-3 w-3 mr-1" />
                 Reject
               </Button>
-              <Button
-                size="sm"
-                onClick={handleAccept}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
+              <Button size="sm" onClick={handleAccept} variant="green">
                 <Check className="h-3 w-3 mr-1" />
                 Accept
               </Button>
