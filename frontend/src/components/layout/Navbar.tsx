@@ -14,7 +14,13 @@ const Navbar = observer(() => {
         <div className="flex flex-col sm:flex-row items-center gap-4">
           {auth.userId ? (
             <>
-              <NavLink to={routes.WorkoutSessions}>Sessions</NavLink>
+              <NavLink to={routes.Invitations}>Invitations</NavLink>
+              {auth.isUserClient && (
+                <>
+                  <NavLink to={routes.Invitations}>My trainer</NavLink>
+                  <NavLink to={routes.WorkoutSessions}>Sessions</NavLink>
+                </>
+              )}
               <NavLink to={routes.Workouts}>Workouts</NavLink>
               <NavLink to={routes.Profile}>Profile</NavLink>
               <Button variant="outline" onClick={auth.logout}>
