@@ -62,6 +62,11 @@ namespace Easygym.Domain.Exceptions
         public WorkoutSessionNotFoundException() : base("Workout session not found") { }
     }
 
+    public class InvitationNotFoundException : AppException
+    {
+        public InvitationNotFoundException() : base("Invitation not found") { }
+    }
+
     // For general validation errors
     public class ValidationException : AppException
     {
