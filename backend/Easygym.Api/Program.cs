@@ -19,6 +19,8 @@ builder.Services.AddControllers()
     {
         // Configure enums to serialize as strings instead of integers
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        // Handle circular references automatically
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 builder.Services.AddOpenApi();
@@ -29,6 +31,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IWorkoutSessionRepository, WorkoutSessionRepository>();
 builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
+builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<CurrentUserService>();

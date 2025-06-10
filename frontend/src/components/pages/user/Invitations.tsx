@@ -1,6 +1,6 @@
 import { useStore } from '@/store/store';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import EmptyState from '@/components/ui/widgets/EmptyState';
 import { UserIcon } from 'lucide-react';
 import { UserRole } from '@/types/User';
@@ -32,19 +32,12 @@ import InvitationsListItem from '@/components/pages/user/InvitationsListItem';
 
 const Invitations = observer(() => {
   const { interactionStore, auth } = useStore();
-  const { invitations, fetchInvitations, isLoading } = interactionStore;
+  const { invitations, nonResolvedInvitations, fetchInvitations, isLoading } =
+    interactionStore;
 
-  const invitee = useMemo(() => {
-    return auth.isUserClient ? UserRole.Trainer : UserRole.Client;
-  }, [auth.isUserClient]);
-
-  const emptyStateButtonText = useMemo(() => {
-    return `Send an invite to a ${invitee}`;
-  }, [invitee]);
-
-  const emptyStateDescriptionText = useMemo(() => {
-    return `You have no invitations yet. You can send an invite to start working with a ${invitee}.`;
-  }, [invitee]);
+  const invitee = auth.isUserClient ? UserRole.Trainer : UserRole.Client;
+  const emptyStateButtonText = `Send an invite to a ${invitee}`;
+  const emptyStateDescriptionText = `You have no invitations yet. You can send an invite to start working with a ${invitee}.`;
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -162,7 +155,7 @@ const Invitations = observer(() => {
       {invitations.length > 0 && !isLoading && (
         <div className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            You have {invitations.length} invitations.
+            You have {nonResolvedInvitations.length} pending invitations.
           </p>
           <Button className="self-start" onClick={handleOpenInviteModal}>
             Send invite

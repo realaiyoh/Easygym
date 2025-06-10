@@ -4,12 +4,26 @@ import { CreateInvitationRequest, Invitation, InvitationStatus } from '@/types/I
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class InteractionStore {
-  invitations: Invitation[] = [];
+  _invitations: Invitation[] = [];
   isLoading: boolean = false;
   error: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  get invitations() {
+    return [...this._invitations].sort((a, b) => {
+      if (a.status === InvitationStatus.Rejected) return 1;
+      if (b.status === InvitationStatus.Rejected) return -1;
+      if (a.status === InvitationStatus.Accepted) return 1;
+      if (b.status === InvitationStatus.Accepted) return -1;
+      return 0;
+    });
+  }
+
+  get nonResolvedInvitations() {
+    return this.invitations.filter((i) => i.status === InvitationStatus.Pending);
   }
 
   fetchInvitations = async () => {
@@ -19,9 +33,9 @@ export default class InteractionStore {
     });
 
     try {
-      const invitations = await interactionService.getInvitations();
+      const _invitations = await interactionService.getInvitations();
       runInAction(() => {
-        this.invitations = invitations;
+        this._invitations = _invitations;
       });
     } catch (error) {
       runInAction(() => {
@@ -43,7 +57,7 @@ export default class InteractionStore {
     try {
       const newInvitation = await interactionService.createInvitation(invitation);
       runInAction(() => {
-        this.invitations.push(newInvitation);
+        this._invitations.push(newInvitation);
       });
     } catch (error) {
       runInAction(() => {
@@ -60,7 +74,15 @@ export default class InteractionStore {
     try {
       const updatedInvitation = await interactionService.resolveInvitation(invitationId, status);
       runInAction(() => {
-        this.invitations = this.invitations.map((i) => i.id === invitationId ? updatedInvitation : i);
+        this._invitations = this._invitations.map((i) => {
+          if (i.id !== invitationId) return i;
+
+          return {
+            ...i,
+            status: updatedInvitation.status,
+            resolvedAt: updatedInvitation.resolvedAt,
+          }
+        });
       });
     } catch (error) {
       runInAction(() => {
@@ -73,7 +95,7 @@ export default class InteractionStore {
     try {
       await interactionService.deleteInvitation(invitationId);
       runInAction(() => {
-        this.invitations = this.invitations.filter((i) => i.id !== invitationId);
+        this._invitations = this._invitations.filter((i) => i.id !== invitationId);
       });
     } catch (error) {
       runInAction(() => {

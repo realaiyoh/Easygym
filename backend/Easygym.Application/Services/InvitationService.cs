@@ -11,12 +11,16 @@ namespace Easygym.Application.Services
         private readonly IInvitationRepository _invitationRepository;
         private readonly CurrentUserService _currentUserService;
         private readonly IUserRepository _userRepository;
+        private readonly IGenericRepository<Client> _clientRepository;
+        private readonly ITrainerRepository _trainerRepository;
 
-        public InvitationService(IInvitationRepository invitationRepository, CurrentUserService currentUserService, IUserRepository userRepository)
+        public InvitationService(IInvitationRepository invitationRepository, CurrentUserService currentUserService, IUserRepository userRepository, IGenericRepository<Client> clientRepository, ITrainerRepository trainerRepository)
         {
             _invitationRepository = invitationRepository;
             _currentUserService = currentUserService;
             _userRepository = userRepository;
+            _clientRepository = clientRepository;
+            _trainerRepository = trainerRepository;
         }
 
         private async Task<Invitation> GetInvitation(int id)
@@ -99,13 +103,22 @@ namespace Easygym.Application.Services
 
         public async Task<Invitation> ResolveInvitation(int id, InvitationStatus status)
         {
-            // TODO: Check if the current user already has a trainer
-            // *A trainer can have multiple clients
-            // *A client can have only one trainer
-
             var invitation = await GetInvitation(id);
-
             await CanAccessInvitation(invitation.ClientId, invitation.TrainerId);
+
+            // Make sure that the client has no trainer yet
+            if (status == InvitationStatus.Accepted)
+            {
+                var client = await _clientRepository.GetByIdAsync(invitation.ClientId) ?? throw new UserNotFoundException();
+                if (client.TrainerId != null)
+                {
+                    throw new ValidationException("Client already has a trainer. Please remove existing trainer first.");
+                }
+
+                // Store the trainer id in the client - EF will automatically handle the relationship
+                client.TrainerId = invitation.TrainerId;
+                await _clientRepository.UpdateAsync(client);
+            }
 
             invitation.Status = status;
             invitation.ResolvedAt = DateTime.UtcNow;

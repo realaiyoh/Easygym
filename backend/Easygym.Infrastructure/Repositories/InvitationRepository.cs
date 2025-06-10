@@ -25,7 +25,8 @@ namespace Easygym.Infrastructure.Repositories
 
         public async Task<bool> IsInvitationAlreadySent(int clientId, int trainerId)
         {
-            return await _context.Invitations.AnyAsync(i => i.ClientId == clientId && i.TrainerId == trainerId);
+            var invitation = await _context.Invitations.FirstOrDefaultAsync(i => i.ClientId == clientId && i.TrainerId == trainerId);
+            return invitation != null && invitation.Status == InvitationStatus.Pending;
         }
     }
 }

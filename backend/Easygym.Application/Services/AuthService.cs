@@ -12,9 +12,9 @@ namespace Easygym.Application.Services
         private readonly JwtService _jwtService;
         private readonly IUserRepository _userRepository;
         private readonly IGenericRepository<Client> _clientRepository;
-        private readonly IGenericRepository<Trainer> _trainerRepository;
+        private readonly ITrainerRepository _trainerRepository;
         private readonly IGenericRepository<Admin> _adminRepository;
-        public AuthService(JwtService jwtService, IUserRepository userRepository, IGenericRepository<Client> clientRepository, IGenericRepository<Trainer> trainerRepository, IGenericRepository<Admin> adminRepository)
+        public AuthService(JwtService jwtService, IUserRepository userRepository, IGenericRepository<Client> clientRepository, ITrainerRepository trainerRepository, IGenericRepository<Admin> adminRepository)
         {
             _jwtService = jwtService;
             _userRepository = userRepository;

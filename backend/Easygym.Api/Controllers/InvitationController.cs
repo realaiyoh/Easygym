@@ -1,7 +1,7 @@
 using Easygym.Api.Models.Requests;
 using Easygym.Application.Services;
 using Easygym.Domain.Constants;
-using Easygym.Domain.Entities;
+using Easygym.Domain.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,9 +34,9 @@ namespace Easygym.Api.Controllers
 
         [Authorize(Roles = $"{Role.Trainer}, {Role.Client}")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> ResolveInvitation(int id, [FromBody] InvitationStatus status)
+        public async Task<IActionResult> ResolveInvitation(int id, [FromBody] ResolveInvitationRequest request)
         {
-            var resolvedInvitation = await _invitationService.ResolveInvitation(id, status);
+            var resolvedInvitation = await _invitationService.ResolveInvitation(id, request.Status);
             return Ok(resolvedInvitation);
         }
 
