@@ -19,10 +19,12 @@ namespace Easygym.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task<User> AddUserAsync(User user)
         {
-            await _context.AddAsync(user);
+            var task = await _context.AddAsync(user);
             await _context.SaveChangesAsync();
+
+            return task.Entity;
         }
     }
 }

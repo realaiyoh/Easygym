@@ -3,6 +3,7 @@ using System;
 using Easygym.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,37 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Easygym.Infrastructure.Migrations
 {
     [DbContext(typeof(EasygymDbContext))]
-    partial class EasygymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250529172252_AddInvitation")]
+    partial class AddInvitation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
-
-            modelBuilder.Entity("Easygym.Domain.Entities.Admin", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admins");
-                });
-
-            modelBuilder.Entity("Easygym.Domain.Entities.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TrainerId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainerId");
-
-                    b.ToTable("Clients");
-                });
 
             modelBuilder.Entity("Easygym.Domain.Entities.Invitation", b =>
                 {
@@ -52,12 +30,6 @@ namespace Easygym.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("InitiatorId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Message")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("ResolvedAt")
@@ -107,16 +79,6 @@ namespace Easygym.Infrastructure.Migrations
                     b.HasIndex("WorkoutId");
 
                     b.ToTable("Sets");
-                });
-
-            modelBuilder.Entity("Easygym.Domain.Entities.Trainer", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Trainers");
                 });
 
             modelBuilder.Entity("Easygym.Domain.Entities.User", b =>
@@ -212,15 +174,6 @@ namespace Easygym.Infrastructure.Migrations
                     b.ToTable("WorkoutSessions");
                 });
 
-            modelBuilder.Entity("Easygym.Domain.Entities.Client", b =>
-                {
-                    b.HasOne("Easygym.Domain.Entities.Trainer", "Trainer")
-                        .WithMany("Clients")
-                        .HasForeignKey("TrainerId");
-
-                    b.Navigation("Trainer");
-                });
-
             modelBuilder.Entity("Easygym.Domain.Entities.Invitation", b =>
                 {
                     b.HasOne("Easygym.Domain.Entities.User", "Client")
@@ -275,11 +228,6 @@ namespace Easygym.Infrastructure.Migrations
                     b.Navigation("Trainee");
 
                     b.Navigation("Workout");
-                });
-
-            modelBuilder.Entity("Easygym.Domain.Entities.Trainer", b =>
-                {
-                    b.Navigation("Clients");
                 });
 
             modelBuilder.Entity("Easygym.Domain.Entities.Workout", b =>

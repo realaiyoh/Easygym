@@ -10,9 +10,9 @@ namespace Easygym.Api.Controllers
     {
         private readonly AuthService _authService;
         private readonly CurrentUserService _currentUserService;
-        
+
         public AuthController(
-            AuthService authService, 
+            AuthService authService,
             CurrentUserService currentUserService)
         {
             _authService = authService;

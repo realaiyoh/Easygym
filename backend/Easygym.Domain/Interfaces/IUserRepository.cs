@@ -5,6 +5,6 @@ namespace Easygym.Domain.Interfaces
     public interface IUserRepository
     {
         Task<User?> GetUserByEmailAsync(string email);
-        Task AddUserAsync(User user);
+        Task<User> AddUserAsync(User user);
     }
 }
