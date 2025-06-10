@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using Easygym.Domain.Constants;
 using Easygym.Domain.Entities;
@@ -10,10 +11,16 @@ namespace Easygym.Application.Services
     {
         private readonly JwtService _jwtService;
         private readonly IUserRepository _userRepository;
-        public AuthService(JwtService jwtService, IUserRepository userRepository)
+        private readonly IGenericRepository<Client> _clientRepository;
+        private readonly IGenericRepository<Trainer> _trainerRepository;
+        private readonly IGenericRepository<Admin> _adminRepository;
+        public AuthService(JwtService jwtService, IUserRepository userRepository, IGenericRepository<Client> clientRepository, IGenericRepository<Trainer> trainerRepository, IGenericRepository<Admin> adminRepository)
         {
             _jwtService = jwtService;
             _userRepository = userRepository;
+            _clientRepository = clientRepository;
+            _trainerRepository = trainerRepository;
+            _adminRepository = adminRepository;
         }
 
         public async Task<string> RegisterAsync(string? name, string email, string password, string role)
@@ -39,8 +46,20 @@ namespace Easygym.Application.Services
                 Role = role,
             };
 
-            await _userRepository.AddUserAsync(user);
+            var addedUser = await _userRepository.AddUserAsync(user);
 
+            // Create role to entity save action mapping which needs to be called accordingly
+            var entityActions = new Dictionary<string, Func<Task>>
+            {
+                [Role.Client] = () => _clientRepository.AddAsync(new Client { Id = addedUser.Id }),
+                [Role.Trainer] = () => _trainerRepository.AddAsync(new Trainer { Id = addedUser.Id }),
+                [Role.Admin] = () => _adminRepository.AddAsync(new Admin { Id = addedUser.Id })
+            };
+
+            // Save user to db according to role
+            await entityActions[role]();
+
+            // Finally generate and return token to user
             return _jwtService.GenerateToken(user.Id.ToString(), role);
         }
 
