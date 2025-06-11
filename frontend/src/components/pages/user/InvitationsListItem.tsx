@@ -19,27 +19,28 @@ interface InvitationsListItemProps {
 }
 
 const InvitationsListItem = ({ invitation }: InvitationsListItemProps) => {
-  const { interactionStore, auth } = useStore();
+  const { interaction, auth } = useStore();
 
   const handleAccept = async () => {
-    await interactionStore.resolveInvitation(
+    await interaction.resolveInvitation(
       invitation.id,
       InvitationStatus.Accepted,
     );
-    if (interactionStore.error) {
-      toast.error(interactionStore.error);
+    if (interaction.error) {
+      toast.error(interaction.error);
     } else {
       toast.success('Invitation accepted!');
+      auth.setMeUser();
     }
   };
 
   const handleReject = async () => {
-    await interactionStore.resolveInvitation(
+    await interaction.resolveInvitation(
       invitation.id,
       InvitationStatus.Rejected,
     );
-    if (interactionStore.error) {
-      toast.error(interactionStore.error);
+    if (interaction.error) {
+      toast.error(interaction.error);
     } else {
       toast.success('Invitation rejected');
     }

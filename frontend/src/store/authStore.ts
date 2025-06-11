@@ -1,12 +1,11 @@
 import api from '@/api/api';
 import { authTokenKey } from '@/lib/constants';
-import { UserRegisterRequest, UserRole } from '@/types/User';
-import { User } from '@/types/User';
+import { UserRegisterRequest, UserRole, CurrentUser } from '@/types/User';
 import { getErrorMessage } from '@/lib/utils';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class AuthStore {
-  user: User | null = null;
+  user: CurrentUser | null = null;
   error: string | null = null;
   isLoading: boolean = true;
 
@@ -36,7 +35,7 @@ export default class AuthStore {
     });
   };
 
-  setMeUser = async (): Promise<User | null> => {
+  setMeUser = async (): Promise<CurrentUser | null> => {
     runInAction(() => {
       this.isLoading = true;
     });

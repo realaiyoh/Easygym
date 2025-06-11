@@ -13,6 +13,11 @@ export interface User {
   createdAt: Date;
 }
 
+export interface CurrentUser extends User {
+  trainer: User | null;
+  invitationAcceptedAt: Date;
+}
+
 export interface UserRegisterRequest {
   name: string;
   email: string;

@@ -31,7 +31,7 @@ import { titleize } from '@/lib/utils';
 import InvitationsListItem from '@/components/pages/user/InvitationsListItem';
 
 const Invitations = observer(() => {
-  const { interactionStore, auth } = useStore();
+  const { interaction: interactionStore, auth } = useStore();
   const { invitations, nonResolvedInvitations, fetchInvitations, isLoading } =
     interactionStore;
 
