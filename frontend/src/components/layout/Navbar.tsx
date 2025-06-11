@@ -17,7 +17,7 @@ const Navbar = observer(() => {
               <NavLink to={routes.Invitations}>Invitations</NavLink>
               {auth.isUserClient && (
                 <>
-                  <NavLink to={''}>My trainer</NavLink>
+                  <NavLink to={routes.MyTrainer}>My trainer</NavLink>
                   <NavLink to={routes.WorkoutSessions}>Sessions</NavLink>
                 </>
               )}

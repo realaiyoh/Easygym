@@ -9,8 +9,9 @@ import { PlusCircleIcon } from 'lucide-react';
 import EmptyState from '@/components/ui/widgets/EmptyState';
 
 const Workouts = observer(() => {
-  const { workout, auth } = useStore();
+  const { workout, auth, interaction } = useStore();
   const { workouts, fetchWorkouts, isLoading } = workout;
+  const { fetchClientsForTrainer } = interaction;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,17 @@ const Workouts = observer(() => {
       ignore = true;
     };
   }, [fetchWorkouts, auth.user]);
+
+  useEffect(() => {
+    let ignore = false;
+    if (!ignore) {
+      fetchClientsForTrainer(auth.userId);
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, [fetchClientsForTrainer, auth.userId]);
 
   const handleCreateWorkout = () => {
     navigate(routes.CreateWorkout);

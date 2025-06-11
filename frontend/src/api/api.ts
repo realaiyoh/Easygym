@@ -4,6 +4,7 @@ import authService from '@/api/services/authService';
 import userService from '@/api/services/userService';
 import workoutService from '@/api/services/workoutService';
 import workoutSessionService from '@/api/services/workoutSessionService';
+import interactionService from './services/interactionService';
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -42,6 +43,7 @@ const api = {
   auth: authService,
   workouts: workoutService,
   workoutSessions: workoutSessionService,
+  interactions: interactionService,
 };
 
 export default api;

@@ -1,12 +1,14 @@
-import interactionService from '@/api/services/interactionService';
+import api from '@/api/api';
 import { getErrorMessage } from '@/lib/utils';
 import { CreateInvitationRequest, Invitation, InvitationStatus } from '@/types/Interaction';
+import { User } from '@/types/User';
 import { makeAutoObservable, runInAction } from 'mobx';
 
 export default class InteractionStore {
   _invitations: Invitation[] = [];
   isLoading: boolean = false;
   error: string | null = null;
+  clientsForTrainer: User[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -33,7 +35,7 @@ export default class InteractionStore {
     });
 
     try {
-      const _invitations = await interactionService.getInvitations();
+      const _invitations = await api.interactions.getInvitations();
       runInAction(() => {
         this._invitations = _invitations;
       });
@@ -55,7 +57,7 @@ export default class InteractionStore {
     });
 
     try {
-      const newInvitation = await interactionService.createInvitation(invitation);
+      const newInvitation = await api.interactions.createInvitation(invitation);
       runInAction(() => {
         this._invitations.push(newInvitation);
       });
@@ -72,7 +74,7 @@ export default class InteractionStore {
 
   resolveInvitation = async (invitationId: number, status: InvitationStatus) => {
     try {
-      const updatedInvitation = await interactionService.resolveInvitation(invitationId, status);
+      const updatedInvitation = await api.interactions.resolveInvitation(invitationId, status);
       runInAction(() => {
         this._invitations = this._invitations.map((i) => {
           if (i.id !== invitationId) return i;
@@ -93,7 +95,7 @@ export default class InteractionStore {
 
   deleteInvitation = async (invitationId: number) => {
     try {
-      await interactionService.deleteInvitation(invitationId);
+      await api.interactions.deleteInvitation(invitationId);
       runInAction(() => {
         this._invitations = this._invitations.filter((i) => i.id !== invitationId);
       });
@@ -102,5 +104,27 @@ export default class InteractionStore {
         this.error = getErrorMessage(error);
       });
     }
+  };
+
+  fetchClientsForTrainer = async (trainerId: number) => {
+    runInAction(() => {
+      this.isLoading = true;
+      this.error = null;
+    });
+
+    try {
+      const clients = await api.interactions.getClientsForTrainer(trainerId);
+      runInAction(() => {
+        this.clientsForTrainer = clients;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error = getErrorMessage(error);
+      });
+    }
+
+    runInAction(() => {
+      this.isLoading = false;
+    });
   };
 }

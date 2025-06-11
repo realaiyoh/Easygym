@@ -8,14 +8,14 @@ interface Store {
   auth: AuthStore;
   workout: WorkoutStore;
   workoutSession: WorkoutSessionStore;
-  interactionStore: InteractionStore;
+  interaction: InteractionStore;
 }
 
 export const store: Store = {
   auth: new AuthStore(),
   workout: new WorkoutStore(),
   workoutSession: new WorkoutSessionStore(),
-  interactionStore: new InteractionStore(),
+  interaction: new InteractionStore(),
 };
 
 export const StoreContext = createContext<Store>(store);

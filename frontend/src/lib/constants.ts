@@ -15,4 +15,5 @@ export const routes = {
   CreateWorkoutSession: '/workout-session/create',
   ViewWorkoutSession: (id: number) => `/workout-session/${id}`,
   Invitations: '/invitations',
+  MyTrainer: '/my-trainer',
 };
